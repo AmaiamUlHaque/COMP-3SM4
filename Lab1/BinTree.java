@@ -1,6 +1,6 @@
 public class BinTree {
     private TNode root;
-    private int num = 0;
+    private int num = 0; //num of code words
 
     //constructor 1; creates a tree with only the root node
     public  BinTree() {
@@ -10,20 +10,26 @@ public class BinTree {
     //constructor 2
     public BinTree(String[] a) throws IllegalArgumentException {
 
+        int k = a.length; // array length
+        
         //check if all items in the array are binary strings
 	    //if they are not, throw an exception
-        int k = a.length; // array length
-        char c; // to store the current character in the binary string
-
-	    //loop through array a
-            for (int i = 0; i < k; i++){
-                int n = a[i].length(); //length of current string
+            for (int i = 0; i < k; i++){ 
+                
                 //loop through the current string;
                 //if current character is not '0' or '1', throw exception
-            
+
+                int n = a[i].length(); //length of current string
+
+                for (int j = 0; j < n; j++){
+                    if (a[i].charAt(j) != '0' && a[i].charAt(j) != '1'){
+                        throw new IllegalArgumentException("Invalid argument!");
+                    }
+                }
 
             }
-      
+    
+        //'stafa was here :<
         //Now, we know that all inputs are binary; 
 	    //we start constructing the tree by creating the root node
         this.root = new TNode(null, null,null);
@@ -39,8 +45,6 @@ public class BinTree {
     private void insertCodeword(String symbol, String binary) throws IllegalArgumentException {
         
         TNode node = this.root; 
-        //node is a reference variable for the current tree node; 
-        //it first points to the root
         
         //read the characters in the binary string and take the appropriate action for each of them
 
