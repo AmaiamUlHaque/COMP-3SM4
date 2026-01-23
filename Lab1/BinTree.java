@@ -44,40 +44,23 @@ public class BinTree {
 
     private void insertCodeword(String symbol, String binary) throws IllegalArgumentException {
         
-        TNode node = this.root; 
-        
-        //read the characters in the binary string and take the appropriate action for each of them
+        TNode currNode = this.root; 
+        int n = binary.length();
+        char c; 
+	    
+        for(int i = 0; i < n; i++){ 
 
-        int n = binary.length(); // length of binary string
-        char c; // to store the current character in the binary string
-	
-	    //loop through the binary string
-        for(int i = 0; i < n; i++){
-	        c = binary.charAt(i); // read current character in the binary string
+	        c = binary.charAt(i);
 
-            //We can write the method in such a way to make sure that at this point in the code 
-	        //the current node exists (it is not null);  
-            //go to left child if c=='0' or to right child if c=='1', 
-            // but if the corresponding child does not exist, create it
-
-            if(c=='0'){
-                //check if left child exists; if it doesn't exist, 
-		        //create it as an internal node with data == null; then go to the left child
-               
-
-
+            if (c=='0') { //go down left path
+                currNode = currNode.left; 
             }
 
-            else{
-                //check if right child exists; if it doesn't exist, create it as an internal node;
-		        //then go to the right child
-
-
+            else { //go down right path
+                currNode = currNode.right;
             }
 
-            //if current node is a codeword, this means that the prefix condition is violated
-	        //and an exception is thrown
-            if(...)
+            if(...) //if not prefix-free
                 throw new IllegalArgumentException("Prefix condition violated!");
 
         }
