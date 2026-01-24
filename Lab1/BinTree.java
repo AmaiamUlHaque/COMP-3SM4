@@ -165,15 +165,27 @@ public class BinTree {
         // outputs the sequence of alphabet symbols obtained by decoding the binary sequence s
         // Each alphabet symbol has to be stored as a separate item in the list.
         // assume thats is a nonempty, valid binary sequence that can be divided into codewords.
+
+        ArrayList<String> decoded = new ArrayList<>();
+        TNode currNode = root; //starting point
         int n = s.length();
+
         for (int i=0; i<n; i++){
             if (s.charAt(i) == '0'){
-                
+                if (currNode.left.data != null){ //is a leaf node
+                    decoded.add(currNode.left.data);
+                    currNode = root; //restart decoding path for next codeword
+                }
             }
             else { //(s.charAt(i) == '1')
-
+                if (currNode.right.data != null){ //is a leaf node
+                        decoded.add(currNode.right.data);
+                        currNode = root; //restart decoding path for next codeword
+                }
             }
         }
+
+        return decoded;
 
     }
 
