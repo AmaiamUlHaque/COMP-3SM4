@@ -82,6 +82,15 @@ public class BinTree {
             currNode.data = symbol;
             num++;
         }
+
+        // // equivalent to if else statements above:
+        // if( currNode.left == null && currNode.right == null) {//check if leaf node
+        //     currNode.data = symbol;
+        //     num++;
+        // }
+        // else { //is internal node
+        //     throw new IllegalArgumentException("Prefix condition violated!");            
+        // }
     }
 
     public void printTree(){
@@ -119,7 +128,53 @@ public class BinTree {
     }
 
     public ArrayList<String> getCodewords(){
-        
+        ArrayList<String> codewords = new ArrayList<>();
+        return getCodewords(root, null, codewords);                                                                                                                                                                                                                                                                                                                                                                                                                                                          );        
+    }
+
+    
+    private ArrayList<String> getCodewords(TNode t, String path, ArrayList<String> codewords){
+        // store codewords in lexicographical/binary order
+        // each item in the list is a str of 0/1s
+        // each codeword insertation should be done with an arraylist class method
+        //KEEP TRACK OF THE PATH?
+
+        if (t!=null){
+
+            getCodewords(t.left, path+"0", codewords);
+
+            if (t.data == null) { //internal node
+                System.out.print("I "); 
+                //go left
+                //once done, go center --> nvm, it must be internal --> no codeword
+                //once done, go right
+            }
+            else { // leaf node / codeword
+                //add codeword to arrayList
+                codewords.add(path);
+                return codewords;
+            }
+            getCodewords(t.right, path+"1", codewords);        
+        }
+
+        return codewords;
+
+    }
+
+    public ArrayList<String> decode(String s){
+        // outputs the sequence of alphabet symbols obtained by decoding the binary sequence s
+        // Each alphabet symbol has to be stored as a separate item in the list.
+        // assume thats is a nonempty, valid binary sequence that can be divided into codewords.
+        int n = s.length();
+        for (int i=0; i<n; i++){
+            if (s.charAt(i) == '0'){
+                
+            }
+            else { //(s.charAt(i) == '1')
+
+            }
+        }
+
     }
 
 
