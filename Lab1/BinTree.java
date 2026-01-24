@@ -117,47 +117,41 @@ public class BinTree {
     }
 
     private int height (TNode node){
-        if (node.left == null || node.right == null){ //if subtree empty
+        if (node == null) return -1; // if tree empty
+        if (node.left == null && node.right == null){ //no children
             return(0);
         }
 
         int lHeight = height(node.left);
         int rHeight = height(node.right);
 
-        return ((lHeight > rHeight) ? height(node.left) : height(node.right)) + 1;
+        return ((lHeight > rHeight) ? lHeight : rHeight) + 1;
     }
 
     public ArrayList<String> getCodewords(){
         ArrayList<String> codewords = new ArrayList<>();
-        return getCodewords(root, null, codewords);                                                                                                                                                                                                                                                                                                                                                                                                                                                          );        
+        return getCodewords(root, "", codewords);     
+        return codewords;                                                                                                                                                                                                                                                                                                                                                                                                                                                     );        
     }
 
-    
-    private ArrayList<String> getCodewords(TNode t, String path, ArrayList<String> codewords){
+    private void getCodewords(TNode t, String path, ArrayList<String> codewords){
         // store codewords in lexicographical/binary order
         // each item in the list is a str of 0/1s
         // each codeword insertation should be done with an arraylist class method
-        //KEEP TRACK OF THE PATH?
+            //go left
+            //once done, go center --> nvm, it must be internal --> no codeword
+            //once done, go right
 
         if (t!=null){
 
-            getCodewords(t.left, path+"0", codewords);
-
-            if (t.data == null) { //internal node
-                System.out.print("I "); 
-                //go left
-                //once done, go center --> nvm, it must be internal --> no codeword
-                //once done, go right
-            }
-            else { // leaf node / codeword
+            if (t.data != null) {
                 //add codeword to arrayList
                 codewords.add(path);
-                return codewords;
             }
+            
+            getCodewords(t.left, path+"0", codewords);
             getCodewords(t.right, path+"1", codewords);        
         }
-
-        return codewords;
 
     }
 
@@ -171,6 +165,7 @@ public class BinTree {
         int n = s.length();
 
         for (int i=0; i<n; i++){
+
             if (s.charAt(i) == '0'){
                 if (currNode.left.data != null){ //is a leaf node
                     decoded.add(currNode.left.data);
@@ -183,10 +178,57 @@ public class BinTree {
                         currNode = root; //restart decoding path for next codeword
                 }
             }
+
         }
 
         return decoded;
 
+    }
+
+    public String toString(){
+        // returns the string representation of the prefix-free code 
+        // as a sequence of pairs (symbol, codeword) 
+        // listed in increasing order of the symbol index, 
+        // separated by empty spaces and ending with an empty space. 
+        // For our example, this string is “(c0,10) (c1,0) (c2,111) (c3, 110) ”
+
+        String str = "";
+        ArrayList<String> codewords = getCodewords();
+
+        for (int i=0; i<num; i++){
+
+            String symbol = "c"+i;
+            String codeword = codewords.get(codewords.indexOf(symbol));
+            String decoded = decode(codeword).get(0); //only one item in arraylist --> always at index 0
+
+            str += "(" + decoded + "," + codeword + ") ";
+
+        }
+
+        return str;
+    }
+
+    public String[] toArray(){
+        int h = height();
+        int size = (int) Math.pow(2, h+1);
+        String[] array = new String[size];
+
+        fillArray(root, 1, array);
+        return array;
+    }
+
+    private void fillArray(TNode node, int index, String[] array) {
+        
+        if (node == null || index >= array.length) { // Base case: null node or index out of bounds
+            return;
+        }
+        
+        // Store current node value
+        array[index] = node.data == null ? "I" : node.data;
+        
+        // Recursively fill children
+        fillArray(node.left, 2*index, array);
+        fillArray(node.right, 2*index+1, array); 
     }
 
 
