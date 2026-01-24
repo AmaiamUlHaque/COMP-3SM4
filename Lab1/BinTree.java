@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.lang.String;
+import java.lang.Math;
+
 public class BinTree {
     private TNode root;
     private int num = 0; //num of code words
@@ -46,33 +50,37 @@ public class BinTree {
         
         TNode currNode = this.root; 
         int n = binary.length();
-        char c; 
+        char c;
 	    
         for(int i = 0; i < n; i++){ 
 
 	        c = binary.charAt(i);
 
             if (c=='0') { //go down left path
-                currNode = currNode.left; 
+                if (currNode.left == null){ //check if left exist
+                    currNode.left = new TNode(null, null, null);
+                }
+                currNode = currNode.left;
             }
 
             else { //go down right path
+                if (currNode.right == null){ //check if right exist
+                    currNode.right = new TNode(null, null, null);
+                }
                 currNode = currNode.right;
             }
-
-            if(...) //if not prefix-free
+            
+            if(currNode.data != null) //current node already contains data --> not prefix free
                 throw new IllegalArgumentException("Prefix condition violated!");
 
         }
 
-        // now the current node is at the end of the path corresponding to the input binary string
-        // if the current node is not a leaf then there must a codeword in the tree 
-	    //that is suffix of the input binary string, so the prefix condition is violated
-        if(...)
+        if( currNode.left != null || currNode.right != null) {//check if internal node
             throw new IllegalArgumentException("Prefix condition violated!");
+        }
         else {
-            ... //copy symbol in the node
-            ... //increase by 1 the number of codewords
+            currNode.data = symbol;
+            num++;
         }
     }
 
@@ -81,10 +89,38 @@ public class BinTree {
     }
 
     private void printTree(TNode t){
-        
+        if (t!=null){
+            printTree(t.left);
+            if (t.data == null) {
+                System.out.print("I "); }
+            else {
+                System.out.print(t.data + " "); }
+            printTree(t.right);
+        }
     }
 
+    public int getNumberOfCodewords(){
+        return num;
+    }
 
+    public int height(){
+        return height(root);
+    }
+
+    private int height (TNode node){
+        if (node.left == null || node.right == null){ //if subtree empty
+            return(0);
+        }
+
+        int lHeight = height(node.left);
+        int rHeight = height(node.right);
+
+        return ((lHeight > rHeight) ? height(node.left) : height(node.right)) + 1;
+    }
+
+    public ArrayList<String> getCodewords(){
+        
+    }
 
 
 }
