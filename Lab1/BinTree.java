@@ -130,8 +130,8 @@ public class BinTree {
 
     public ArrayList<String> getCodewords(){
         ArrayList<String> codewords = new ArrayList<>();
-        return getCodewords(root, "", codewords);     
-        return codewords;                                                                                                                                                                                                                                                                                                                                                                                                                                                     );        
+        getCodewords(root, "", codewords);     
+        return codewords;        
     }
 
     private void getCodewords(TNode t, String path, ArrayList<String> codewords){
@@ -231,8 +231,11 @@ public class BinTree {
         fillArray(node.right, 2*index+1, array); 
     }
 
+    
 
 }
+
+
 
 
 
