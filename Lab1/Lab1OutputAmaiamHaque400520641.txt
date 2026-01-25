@@ -1,0 +1,179 @@
+PS C:\Users\haque\Documents\GitHub\AmaiamUlHaque\COMP-3SM4>  c:; cd 'c:\Users\haque\Documents\GitHub\AmaiamUlHaque\COMP-3SM4'; & 'C:\Program Files\Eclipse Adoptium\jdk-17.0.17.10-hotspot\bin\java.exe' '-XX:+ShowCodeDetailsInExceptionMessages' '-cp' 'C:\Users\haque\AppData\Roaming\Code\User\workspaceStorage\c60baddc72b8ad3cf16caeb45c99413d\redhat.java\jdt_ws\COMP-3SM4_c7774e78\bin' 'BinTree' 
+------------------Testing Constructor 1--------------
+Expected Output: "I num=0"
+I num=0
+
+------------------Testing method insertCodeword--------------
+
+------------------Test 1. Valid Input--------------
+Expected Output: "I c0 I num=1"
+I c0 I num=1
+
+------------------Testing method insertCodeword--------------
+
+------------------Test 2. Valid Input--------------
+Expected Output: "I c1 I I c0 I num=2"
+I c1 I I c0 I num=2
+
+------------------Testing method insertCodeword--------------
+
+------------------Test 3. Invalid Input. Duplicate codeword already in the tree--------------
+Expected Output: "Prefix condition violated!"
+Prefix condition violated!
+
+------------------Testing method insertCodeword--------------
+
+------------------Test 4. Invalid Input. A strict sufffix already in the tree--------------
+Expected Output: "Prefix condition violated!"
+Prefix condition violated!
+
+------------------Testing method insertCodeword--------------
+
+------------------Test 5. Invalid Input. A strict prefix already in the tree--------------
+Expected Output: "Prefix condition violated!"
+Prefix condition violated!
+
+------------------Testing Constructor 2--------------
+
+------------------Test 6. Valid Input--------------
+Expected Output: "c1 I c0 I c3 I c2 num=4"
+c1 I c0 I c3 I c2 num=4
+
+------------------Testing Constructor 2--------------
+
+------------------Test 7. Invalid Input. Some inputs are not binary--------------
+Expected Output: "Invalid Argument!"
+Invalid argument!
+
+------------------Testing getNumberOfCodewords() ----------------
+Test 8: Testing getNumberOfCodewords() method
+Expected Output: 4
+Actual Output: 4
+
+------------------Testing height() ----------------
+Test 9: Testing height() method
+Expected Output: 3
+Actual Output: 3
+
+Test 10: Testing height with simpler tree
+Tree from array {"0", "1"}
+Expected height: 1
+Actual height: 1
+
+------------------Testing getCodewords() ----------------
+Test 11: Testing getCodewords() method
+Expected Output: [0, 10, 110, 111] in lexicographical order
+Actual Output: [0, 10, 110, 111]
+
+Test 12: Testing getCodewords with different tree
+Tree from array {"00", "01", "10", "11"}
+Expected Output: [00, 01, 10, 11]
+Actual Output: [00, 01, 10, 11]
+
+------------------Testing decode() ----------------
+Test 13: Testing decode() method - Valid sequence: 11011110110000
+Expected Output: [c3, c2, c0, c3, c1, c1, c1]
+Actual Output: [c3, c2, c0, c3, c1, c1, c1]
+
+Test 14: Testing decode with another valid sequence: 0011001010111
+Expected Output: [c1, c1, c3, c1, c0, c0, c2]
+Actual Output: [c1, c1, c3, c1, c0, c0, c2]
+
+Test 15: Testing decode with balanced tree - Valid sequence: 00011011
+Expected Output: [c0, c1, c2, c3]
+Actual Output: [c0, c1, c2, c3]
+
+Test 16: Testing decode with single codeword tree - Valid sequence: 0000
+Expected Output: [c0, c0, c0, c0]
+Actual Output: [c0, c0, c0, c0]
+
+------------------Testing toString() ----------------
+Test 17: Testing toString() method
+Expected Output: (c0,10) (c1,0) (c2,111) (c3,110)
+Actual Output: (c0,10) (c1,0) (c2,111) (c3,110)
+
+Test 18: Testing toString() with balanced tree
+Expected Output: (c0,00) (c1,01) (c2,10) (c3,11)
+Actual Output: (c0,00) (c1,01) (c2,10) (c3,11)
+
+Test 19: Testing toString() with single codeword tree
+Expected Output: (c0,0)
+Actual Output: (c0,0)
+
+------------------Testing toArray() ----------------
+Test 20: Testing toArray() method
+Creating array representation of the tree
+Array size: 16
+First 15 elements (index 1-14):
+  index 1: I
+  index 2: c1
+  index 3: I
+  index 4: null
+  index 5: null
+  index 6: c0
+  index 7: I
+  index 8: null
+  index 9: null
+  index 10: null
+  index 11: null
+  index 12: null
+  index 13: null
+  index 14: c3
+
+Test 21: Testing toArray() with balanced tree
+Array size: 8
+First 15 elements (index 1-14):
+  index 1: I
+  index 2: I
+  index 3: I
+  index 4: c0
+  index 5: c1
+  index 6: c2
+  index 7: c3
+
+Test 22: Testing toArray() with single codeword tree
+Array size: 4
+First 5 elements (index 1-4):
+  index 1: I
+  index 2: c0
+  index 3: null
+
+------------------Testing Additional Valid Cases ----------------
+
+Test 23: Testing with longer codewords
+Tree with 6 codewords of increasing length
+Number of codewords: 6
+Height: 6
+Codewords: [0, 10, 110, 1110, 11110, 111110]
+
+Test 24: Testing decode with various valid sequences
+Decoding '0' from balanced tree:
+Expected: [c0]
+Actual: []
+
+Decoding '1' from simple tree:
+Expected: [c1]
+Actual: [c1]
+
+Decoding '101011' from myTree (should be c0 c2 c1):
+Expected: [c0, c2, c1]
+Actual: [c0, c0]
+
+------------------Testing Method Interactions ----------------
+
+Test 25: Testing that toString uses getCodewords and decode
+toString output: (c0,10) (c1,0) (c2,111) (c3,110)
+Verifying correctness...
+  ? Mismatch for symbol c0
+  ? Mismatch for symbol c1
+  ? Mismatch for symbol c2
+  ? Mismatch for symbol c3
+
+Test 26: Testing printTree output format
+Printing tree from original example:
+c1 I c0 I c3 I c2
+Expected: c1 I c0 I c3 I c2
+
+------------------Final Summary ----------------
+Total tests executed: 26
+All tests completed successfully!
