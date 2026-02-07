@@ -32,20 +32,19 @@ public class HandsMaxHeap {
     }
 
     // [Problem 0] Implement buildMaxHeap 
-    // organizes the array as a heap
-    private void buildMaxHeap()
+    private void buildMaxHeap() //organizes the array as a heap
     {
         // When this method is invoked by the constructor, the array myHeap is not organized as a heap yet;
         // the method should organize the array as a heap (disregarding the element at index 0) using the O(n)-time algorithm 
         
         for (int i=1; i<=size; i++){
             //insert each hand into the heap
-            insert(myHeap[i]); 
-            //worry about the swapping indexes here or is it taken care of in the function invoked?
+            insert(myHeap[i]);
         }
 
     }
-  
+    
+
     // [Problem 1] Implement Max Heap for 5-Card Hands
 
     // [Problem 1-1] Implement Private Utility Methods
@@ -83,6 +82,7 @@ public class HandsMaxHeap {
                 child = 2*index;
             }
         }
+        myHeap[index]=key;
     } 
 
     // [Problem 1-3] Implement Upward Heap Reorganization Private Method from the provided index 
@@ -92,7 +92,20 @@ public class HandsMaxHeap {
         // for this, first copy the Heap Node at index into temp
         // compare the temp node against the parent node and so on               
         
-        
+        Hands key = myHeap[index];
+        int parent = index/2;
+
+        while (parent <= size){
+
+            if (myHeap[parent].isMyHandLarger(key)){
+                myHeap[index] = myHeap[parent];
+                index = parent;
+                parent = index/2;
+            }
+
+        }
+
+        myHeap[index]=key;
 
     }
 
@@ -103,7 +116,24 @@ public class HandsMaxHeap {
     // Insert Method
     public void insert(Hands thisHand)
     {
-        // insert thisHand into the heap; if there is no room for insertion allocate a bigger array (the capacity of the new heap should be twice larger) and copy the data over     
+        // insert thisHand into the heap; 
+        // if there is no room for insertion allocate a bigger array 
+        // (the capacity of the new heap should be twice larger) and copy the data over     
+
+        if (size == capacity){ //no more room
+
+            Hands[] temp = myHeap;
+            myHeap = new Hands[2*capacity];
+
+            for (int i=1; i<=size; i++){
+                myHeap[i] = temp[i];
+            }
+
+            capacity *= 2;
+
+            }
+
+            
     }
 
     public Hands removeMax() throws RuntimeException //remove the largest Hand from the heap; if the heap is empty throw a RuntimeException
