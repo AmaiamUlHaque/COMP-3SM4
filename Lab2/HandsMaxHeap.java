@@ -1,74 +1,99 @@
 import java.util.Random;
 
 public class HandsMaxHeap {
-    private Hands[] myHeap;  // array
-    private int size;      // heap size (number of items stored in the heap)
-    private int capacity;  // heap capacity (the maximum number of items the heap could store)
+    private Hands[] myHeap; // array
+    private int size;       // heap size (number of items stored in the heap)
+    private int capacity;   // heap capacity (the maximum number of items the heap could store)
 
     // Constructor 1: creates an empty heap with a given capacity
     public HandsMaxHeap(int bufSize)
     {
         // set capacity = bufSize, and size = 0
         // instantiate myHeap as a Hands array with capacity + 1 slots (think about why capacity + 1)
-        // finally, set the first element in the Hands array to a dummy Hand (using the default Hands() constructor)        
+        // finally, set the first element in the Hands array to a dummy Hand (using the default Hands() constructor)
+        
+        capacity = bufSize;
+        size=0;
+        myHeap = new Hands[capacity+1]; //index 0 = dummy header
+
     }
 
     // Constructor 2: constructs a heap out of the array someHands 
-    // the first element in the array is treated as a dummy, the remaining elements are organized as a heap using 
-    // the private method bulidMaxHeap, which you have to implement
-    
     public HandsMaxHeap(Hands[] someHands)
     {
+        // the first element in the array is treated as a dummy, the remaining elements are organized as a heap using 
+        // the private method bulidMaxHeap, which you have to implement
+
         myHeap = someHands;
-        capacity = someHands.length - 1;
+        capacity = someHands.length - 1; //myHeap [capacity+1] --> capacity = myHeap.length-1
         size = capacity;
-        buildMaxHeap();  
+        buildMaxHeap();
+
     }
 
     // [Problem 0] Implement buildMaxHeap 
-    
-    // When this method is invoked by the constructor, the array myHeap is not organized as a heap yet;
-    // the method should organize the array as a heap (disregarding the element at index 0) using the O(n)-time algorithm 
+    // organizes the array as a heap
     private void buildMaxHeap()
     {
+        // When this method is invoked by the constructor, the array myHeap is not organized as a heap yet;
+        // the method should organize the array as a heap (disregarding the element at index 0) using the O(n)-time algorithm 
+        
+        for (int i=1; i<=size; i++){
+            //insert each hand into the heap
+            insert(myHeap[i]); 
+            //worry about the swapping indexes here or is it taken care of in the function invoked?
+        }
 
     }
   
     // [Problem 1] Implement Max Heap for 5-Card Hands
 
     // [Problem 1-1] Implement Private Utility Methods
-    // 1. A private method calculating the parent index
-    private int parent(int index)
+    private int parent(int index) //calculates the parent index
     {
-
+        return index/2;
     }
     
-    // 2. A private method calculating the left-child index
-    private int leftChild(int index)
+    private int leftChild(int index) // calculates the left-child index
     {
-        
+        return 2*index;
     }
 
-    // 3. A private method calculating the right-child index
-    private int rightChild(int index)
+    private int rightChild(int index) //calculates the right-child index
     {
-
+        return 2*index+1;
     }
 
     // [Problem 1-2] Implement the Downward Heap Reorganization Private Method from the provided index 
-    // this is the percolateDown discussed in class
-    private void downHeapify(int index)
+
+    private void downHeapify(int index) //percolateDown
     {
-      //percolateDown the Heap Node at index; stop when it fits         
+        //percolateDown the Heap Node at index; stop when it fits
+        Hands key = myHeap[index];
+        int child = 2*index; //left child
+
+        while (child >= size){
+
+            if (child > size && myHeap[child+1].isMyHandLarger(myHeap[child])){
+                child++; //right child
+            }
+            if (myHeap[child].isMyHandSmaller(key)){
+                myHeap[index] = myHeap[child];
+                index = child;
+                child = 2*index;
+            }
+        }
     } 
 
     // [Problem 1-3] Implement Upward Heap Reorganization Private Method from the provided index 
-    // this is the percolateUp discussed in class
-    private void heapifyUp(int index)
+    private void heapifyUp(int index) //percolateUp
     {   
         // percolateUp the Heap Node at index; stop when it fits
         // for this, first copy the Heap Node at index into temp
-        // compare the temp node against the parent node and so on                    
+        // compare the temp node against the parent node and so on               
+        
+        
+
     }
 
 
@@ -81,40 +106,79 @@ public class HandsMaxHeap {
         // insert thisHand into the heap; if there is no room for insertion allocate a bigger array (the capacity of the new heap should be twice larger) and copy the data over     
     }
 
-    public Hands removeMax() throws RuntimeException
+    public Hands removeMax() throws RuntimeException //remove the largest Hand from the heap; if the heap is empty throw a RuntimeException
     {
-        //remove the largest Hand from the heap; if the heap is empty throw a RuntimeException
+        if (size == 0){
+            //throw runtime exception
+        }
+
+
+
+
     }
 
-    public int getSize()
+    public int getSize() // return the size of the heap
     {
-        // return the size of the heap
+        return size;
     }
 
-    public boolean isEmpty()
+    public boolean isEmpty() //return true if heap is empty; return false otherwise
     {
-        //return true if heap is empty; return false otherwise
+        return size==0;
     }
 
-    public void printHeap()
+    public void printHeap() //prints all Hands in heap by traversing the heap in level order
     {
         // For Debugging Purpose - Print all the heap elements (i.e. Hands) by traversing the heap in level order        
         //  For valid hands, print the hand using the respective method in Hands class
         //  For invalid hands, just print "--INV--"
         //  Use the required method in Hands class to determine whether a Hand is valid.
-        
+
+        for (int i=1; i<=size; i++){
+            myHeap[i].printMyHand();
+        }
+
     }
 
-    // Sorts the array IN PLACE using the heap sort algorithm
-    // Sorting IN PLACE means O(1) extra memory
-    public static void heapSort(Hands myHands[])
-    {
-        // Sort In place the incoming array myHands in DESCENDING order
-        // using the heap sort algorithm
+    public static void heapSort(Hands myHands[], int size) // sorts the array IN PLACE using the heap sort algorithm in descending order
+    {   
+        for (int i=1; i<size; i++){
+            int largestIndex = i;
+            Hands largestHand = myHands[largestIndex];
+
+            for (int j=i; j<=size; j++){
+
+                if (largestHand.isMyHandLarger(myHands[j]) == false){ //current indexed hand is larger
+                    largestIndex = j;
+                    largestHand = myHands[largestIndex]; //to avoid finding it each time for each comparison
+                }
+                
+            }
+
+            myHands[0] = myHands[largestIndex]; //serves as temp var
+            myHands[largestIndex] = myHands[i];
+            myHands[i] = myHands[0];
+            //----------------------------------------------------------------------------------------------
+            // //USE INDEX 0 INSETAD FOR 'LARGEST_INDEX & LARGEST_HAND'? TRYING IT OUT HERE!
+            // myHands[0] = myHands[i]; //current hand --> [i] keeps track of largest hand
+            //
+            // for (int j=i+1; j<=size; j++){
+            //
+            //     if (myHands[0].isMyHandLarger(myHands[j]) == false){ //current indexed hand is larger
+            //         myHands[i] = myHands[j]; 
+            //     }
+            //    
+            // }
+            //
+            // myHands[j] = myHands[i];
+            // myHands[i] = myHands[0];
+
+        }
+
     }
 
 
-   // This is the Test Bench!!
+    // This is the Test Bench!!
 
     private static boolean totalPassed = true;
     private static int totalTestCount = 0;
@@ -212,7 +276,6 @@ public class HandsMaxHeap {
             totalPassCount++;            
         }
     }
-    
     
     private static void testRightChild(){
         // Setup
@@ -684,7 +747,6 @@ public class HandsMaxHeap {
         }
     }
 
-
     private static void testHeapSort1(){
         // Setup
         System.out.println("============testHeapSort1=============");
@@ -806,8 +868,6 @@ public class HandsMaxHeap {
         }
     }
 
-
-    
     private static boolean assertEquals(Hands a, Hands b)
     {
         if(!a.isMyHandEqual(b))
