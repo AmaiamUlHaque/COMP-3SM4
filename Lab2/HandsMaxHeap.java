@@ -65,62 +65,116 @@ public class HandsMaxHeap {
 
     // [Problem 1-2] Implement the Downward Heap Reorganization Private Method from the provided index 
 
-    private void downHeapify(int index) //percolateDown
+    // private void downHeapifyyy(int index) //percolateDown
+    // {
+    //     //percolateDown the Heap Node at index; stop when it fits
+    //     Hands key = myHeap[index];
+    //     int child = 2*index; //left child
+    //    
+    //     while (child <= size){
+    //
+    //         if (child > size && myHeap[child+1].isMyHandLarger(myHeap[child])){
+    //             child++; //right child
+    //         }
+    //         if (myHeap[child].isMyHandSmaller(key)){
+    //             myHeap[index] = myHeap[child];
+    //             index = child;
+    //             child = 2*index;
+    //         }
+    //     }
+    //     myHeap[index]=key;
+    // } 
+
+    private void downHeapify(int index)
     {
-        //percolateDown the Heap Node at index; stop when it fits
-        Hands key = myHeap[index];
-        int child = 2*index; //left child
-
-        while (child >= size){
-
-            if (child > size && myHeap[child+1].isMyHandLarger(myHeap[child])){
-                child++; //right child
+        while (leftChild(index) <= size) { //check if the node at index is a leaf (has no children)
+            
+            int largerChild = leftChild(index);
+            int rightChild = rightChild(index);
+            
+            //check if right child exists and is larger than left child
+            if (rightChild <= size && myHeap[rightChild].isMyHandLarger(myHeap[largerChild])){
+                largerChild = rightChild;
             }
-            if (myHeap[child].isMyHandSmaller(key)){
-                myHeap[index] = myHeap[child];
-                index = child;
-                child = 2*index;
+            
+            //check if the larger child is larger than the current node
+            if (myHeap[largerChild].isMyHandLarger(myHeap[index])){
+
+                // Swap the current node with the larger child
+                Hands temp = myHeap[index];
+                myHeap[index] = myHeap[largerChild];
+                myHeap[largerChild] = temp;
+                
+                // Move down to the child's position
+                index = largerChild;
+            }
+
+            else { //heap property is satisfied
+                break;
             }
         }
-        myHeap[index]=key;
-    } 
+    }
 
     // [Problem 1-3] Implement Upward Heap Reorganization Private Method from the provided index 
+
+    // private void heapifyUppp(int index) //percolateUp
+    // {   
+    //     // percolateUp the Heap Node at index; stop when it fits
+    //     // for this, first copy the Heap Node at index into temp
+    //     // compare the temp node against the parent node and so on               
+    //  
+    //     Hands key = myHeap[index];
+    //     int parent = index/2;
+    //
+    //     while (parent <= size){
+    //
+    //         if (myHeap[parent].isMyHandLarger(key)){
+    //             myHeap[index] = myHeap[parent];
+    //             index = parent;
+    //             parent = index/2;
+    //         }
+    //
+    //     }
+    //
+    //     myHeap[index]=key;
+    //
+    // }
+
     private void heapifyUp(int index) //percolateUp
-    {   
+    {
         // percolateUp the Heap Node at index; stop when it fits
         // for this, first copy the Heap Node at index into temp
-        // compare the temp node against the parent node and so on               
-        
-        Hands key = myHeap[index];
-        int parent = index/2;
+        // compare the temp node against the parent node and so on    
 
-        while (parent <= size){
+        while (index > 1){  // stop when we reach the root (index 1)
 
-            if (myHeap[parent].isMyHandLarger(key)){
-                myHeap[index] = myHeap[parent];
-                index = parent;
-                parent = index/2;
+            int parentIndex = parent(index);
+            
+            //swap with parent if current node is larger
+            if (myHeap[index].isMyHandLarger(myHeap[parentIndex])){
+                
+                Hands temp = myHeap[index];
+                myHeap[index] = myHeap[parentIndex];
+                myHeap[parentIndex] = temp;
+                index = parentIndex;
             }
 
+            else { //heap property is satisfied
+                break;
+            }
         }
-
-        myHeap[index]=key;
-
     }
 
 
     // [Problem 1-4] Complete the Max Heap ADT Public Methods
-    
 
-    // Insert Method
     public void insert(Hands thisHand)
     {
         // insert thisHand into the heap; 
         // if there is no room for insertion allocate a bigger array 
         // (the capacity of the new heap should be twice larger) and copy the data over     
 
-        if (size == capacity){ //no more room
+        if (size == capacity){ //no more room --> add more
 
             Hands[] temp = myHeap;
             myHeap = new Hands[2*capacity];
@@ -131,20 +185,30 @@ public class HandsMaxHeap {
 
             capacity *= 2;
 
-            }
+        }
 
-            
+        size++;
+        myHeap[size] = thisHand;
+        heapifyUp(size); //restores heap ordering property
+
     }
 
     public Hands removeMax() throws RuntimeException //remove the largest Hand from the heap; if the heap is empty throw a RuntimeException
     {
-        if (size == 0){
-            //throw runtime exception
+        if (size == 0){ //throw runtime exception
+            throw new RuntimeException("Heap is empty");
         }
 
+        Hands maxHand = myHeap[1];
+        myHeap[1] = myHeap[size]; //swap last indexed hand to root
+        myHeap[size] = new Hands();
+        size--;
 
+        if (size>0){
+            downHeapify(1); //percolateDown's the newly swapped hand
+        }
 
-
+        return maxHand;
     }
 
     public int getSize() // return the size of the heap
@@ -170,13 +234,15 @@ public class HandsMaxHeap {
 
     }
 
-    public static void heapSort(Hands myHands[], int size) // sorts the array IN PLACE using the heap sort algorithm in descending order
+    public static void heapSort(Hands myHands[]) // sorts the array IN PLACE using the heap sort algorithm in descending order
     {   
-        for (int i=1; i<size; i++){
+        int n = myHands.length;
+
+        for (int i=1; i<n; i++){
             int largestIndex = i;
             Hands largestHand = myHands[largestIndex];
 
-            for (int j=i; j<=size; j++){
+            for (int j=i; j<=n; j++){
 
                 if (largestHand.isMyHandLarger(myHands[j]) == false){ //current indexed hand is larger
                     largestIndex = j;
@@ -188,21 +254,7 @@ public class HandsMaxHeap {
             myHands[0] = myHands[largestIndex]; //serves as temp var
             myHands[largestIndex] = myHands[i];
             myHands[i] = myHands[0];
-            //----------------------------------------------------------------------------------------------
-            // //USE INDEX 0 INSETAD FOR 'LARGEST_INDEX & LARGEST_HAND'? TRYING IT OUT HERE!
-            // myHands[0] = myHands[i]; //current hand --> [i] keeps track of largest hand
-            //
-            // for (int j=i+1; j<=size; j++){
-            //
-            //     if (myHands[0].isMyHandLarger(myHands[j]) == false){ //current indexed hand is larger
-            //         myHands[i] = myHands[j]; 
-            //     }
-            //    
-            // }
-            //
-            // myHands[j] = myHands[i];
-            // myHands[i] = myHands[0];
-
+            
         }
 
     }
