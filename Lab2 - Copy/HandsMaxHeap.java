@@ -889,7 +889,7 @@ public class HandsMaxHeap {
         return true;
     }
     
-   private static void CustomTestInsert1(){
+    private static void CustomTestInsert1(){
         // Setup
         System.out.println("============CustomTestInsert1=============");
         boolean passed = true;
@@ -917,14 +917,19 @@ public class HandsMaxHeap {
             myMaxHeap.insert(hand);
         }
         
-        // Verify heap size and capacity after resizing
+        // Verify heap size
         if (myMaxHeap.getSize() != 3) {
             System.out.println("\tAssert Failed! Expected size: 3, Actual: " + myMaxHeap.getSize());
             passed = false;
         }
         
-        if (myMaxHeap.capacity != 2) { // Should have doubled from 1 to 2
-            System.out.println("\tAssert Failed! Expected capacity: 2, Actual: " + myMaxHeap.capacity);
+        // After inserting 3 hands starting with capacity 1:
+        // - First insert: size=1, capacity=1 (no resize)
+        // - Second insert: size==capacity (1==1), resize to capacity=2
+        // - Third insert: size==capacity (2==2), resize to capacity=4
+        // So final capacity should be 4
+        if (myMaxHeap.capacity != 4) {
+            System.out.println("\tAssert Failed! Expected capacity: 4, Actual: " + myMaxHeap.capacity);
             passed = false;
         }
         
@@ -943,7 +948,6 @@ public class HandsMaxHeap {
             totalPassCount++;            
         }
     }
-
     private static void CustomTestInsert2(){
         // Setup
         System.out.println("============CustomTestInsert2=============");
