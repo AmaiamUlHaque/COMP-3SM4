@@ -618,49 +618,7 @@ public class HandsMaxHeap {
             totalPassCount++;            
         }
     }
-    
-    private static void CustomTestInsert1(){
-        // Setup
-        System.out.println("============CustomTestInsert1=============");
-        boolean passed = true;
-        totalTestCount++;
 
-        // Add your own custom test here
-        // WARNING!! remove this line when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        // WARNING!! remove this line when adding test case here
-        passed &= false;
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-    
-    private static void CustomTestInsert2(){
-        // Setup
-        System.out.println("============CustomTestInsert2=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // WARNING!! remove this line when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        // WARNING!! remove this line when adding test case here
-        passed &= false;
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-    
     private static void testGetSize1(){
         // Setup
         System.out.println("============testGetSize1=============");
@@ -826,48 +784,6 @@ public class HandsMaxHeap {
         }
     }
 
-    private static void CustomTestRemoveMax1(){
-        // Setup
-        System.out.println("============CustomTestRemoveMax1=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // WARNING!! remove this line when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        // WARNING!! remove this line when adding test case here
-        passed &= false;
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-    
-    private static void CustomTestRemoveMax2(){
-        // Setup
-        System.out.println("============CustomTestRemoveMax2=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // WARNING!! remove this line when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        // WARNING!! remove this line when adding test case here
-        passed &= false;
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-
     private static void testHeapSort1(){
         // Setup
         System.out.println("============testHeapSort1=============");
@@ -1017,4 +933,259 @@ public class HandsMaxHeap {
         return true;
     }
     
+   private static void CustomTestInsert1(){
+        // Setup
+        System.out.println("============CustomTestInsert1=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Test inserting into a heap with initial capacity 1 (testing resize functionality)
+        HandsMaxHeap myMaxHeap = new HandsMaxHeap(1);
+        
+        // Create 3 hands to test resizing
+        Hands[] testHands = new Hands[3];
+        testHands[0] = new Hands(
+            new Card(10, 'S'), new Card(11, 'S'), new Card(12, 'S'), new Card(13, 'S'), new Card(14, 'S')
+        ); // Straight flush (highest)
+        
+        testHands[1] = new Hands(
+            new Card(8, 'H'), new Card(9, 'H'), new Card(10, 'H'), new Card(11, 'H'), new Card(12, 'H')
+        ); // Straight flush (lower)
+        
+        testHands[2] = new Hands(
+            new Card(14, 'S'), new Card(14, 'H'), new Card(14, 'D'), new Card(10, 'C'), new Card(10, 'D')
+        ); // Full house
+        
+        // Insert all hands
+        for (Hands hand : testHands) {
+            myMaxHeap.insert(hand);
+        }
+        
+        // Verify heap size and capacity after resizing
+        if (myMaxHeap.getSize() != 3) {
+            System.out.println("\tAssert Failed! Expected size: 3, Actual: " + myMaxHeap.getSize());
+            passed = false;
+        }
+        
+        if (myMaxHeap.capacity != 2) { // Should have doubled from 1 to 2
+            System.out.println("\tAssert Failed! Expected capacity: 2, Actual: " + myMaxHeap.capacity);
+            passed = false;
+        }
+        
+        // Verify max hand is at root
+        Hands maxHand = myMaxHeap.removeMax();
+        if (!testHands[0].isMyHandEqual(maxHand)) {
+            System.out.println("\tAssert Failed! Wrong max hand removed");
+            passed = false;
+        }
+        
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+    private static void CustomTestInsert2(){
+        // Setup
+        System.out.println("============CustomTestInsert2=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Test inserting hands in random order and verify heap property
+        HandsMaxHeap myMaxHeap = new HandsMaxHeap(10);
+        
+        // Create hands with different ranks (inserting in non-sorted order)
+        Hands hand1 = new Hands(
+            new Card(2, 'C'), new Card(2, 'D'), new Card(6, 'C'), new Card(6, 'S'), new Card(6, 'H')
+        ); // Full house 6s over 2s
+        
+        Hands hand2 = new Hands(
+            new Card(10, 'S'), new Card(11, 'S'), new Card(12, 'S'), new Card(13, 'S'), new Card(14, 'S')
+        ); // Royal straight flush (highest)
+        
+        Hands hand3 = new Hands(
+            new Card(4, 'C'), new Card(5, 'C'), new Card(6, 'C'), new Card(7, 'C'), new Card(8, 'C')
+        ); // Straight flush
+        
+        Hands hand4 = new Hands(
+            new Card(3, 'C'), new Card(3, 'D'), new Card(3, 'S'), new Card(5, 'H'), new Card(5, 'D')
+        ); // Full house 3s over 5s (lowest)
+        
+        // Insert in random order
+        myMaxHeap.insert(hand1);  // Full house
+        myMaxHeap.insert(hand2);  // Royal straight flush (should be max)
+        myMaxHeap.insert(hand3);  // Straight flush
+        myMaxHeap.insert(hand4);  // Full house (lowest)
+        
+        // Verify heap size
+        if (myMaxHeap.getSize() != 4) {
+            System.out.println("\tAssert Failed! Expected size: 4, Actual: " + myMaxHeap.getSize());
+            passed = false;
+        }
+        
+        // Verify that root is the max (hand2)
+        Hands maxHand = myMaxHeap.removeMax();
+        if (!hand2.isMyHandEqual(maxHand)) {
+            System.out.println("\tAssert Failed! Wrong max hand");
+            passed = false;
+        }
+        
+        // Verify next max (hand3)
+        Hands nextHand = myMaxHeap.removeMax();
+        if (!hand3.isMyHandEqual(nextHand)) {
+            System.out.println("\tAssert Failed! Wrong second max hand");
+            passed = false;
+        }
+        
+        // Verify next (hand1 should be before hand4 since it's a higher full house)
+        nextHand = myMaxHeap.removeMax();
+        if (!hand1.isMyHandEqual(nextHand)) {
+            System.out.println("\tAssert Failed! Wrong third hand");
+            passed = false;
+        }
+        
+        // Verify last (hand4)
+        nextHand = myMaxHeap.removeMax();
+        if (!hand4.isMyHandEqual(nextHand)) {
+            System.out.println("\tAssert Failed! Wrong fourth hand");
+            passed = false;
+        }
+        
+        // Verify heap is empty
+        if (!myMaxHeap.isEmpty()) {
+            System.out.println("\tAssert Failed! Heap should be empty");
+            passed = false;
+        }
+        
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+    private static void CustomTestRemoveMax1(){
+        // Setup
+        System.out.println("============CustomTestRemoveMax1=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Test removeMax on empty heap (should throw RuntimeException)
+        HandsMaxHeap emptyHeap = new HandsMaxHeap(5);
+        
+        try {
+            emptyHeap.removeMax();
+            // If we get here, no exception was thrown - test fails
+            System.out.println("\tAssert Failed! Expected RuntimeException for empty heap removal");
+            passed = false;
+        } catch (RuntimeException e) {
+            // Expected exception - test passes
+            passed = true;
+        } catch (Exception e) {
+            // Wrong type of exception
+            System.out.println("\tAssert Failed! Expected RuntimeException but got: " + e.getClass().getName());
+            passed = false;
+        }
+        
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+    private static void CustomTestRemoveMax2(){
+        // Setup
+        System.out.println("============CustomTestRemoveMax2=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Test removeMax preserves heap property after each removal
+        HandsMaxHeap myMaxHeap = new HandsMaxHeap(10);
+        
+        // Create 5 test hands
+        Hands[] testHands = new Hands[5];
+        testHands[0] = new Hands(
+            new Card(10, 'S'), new Card(11, 'S'), new Card(12, 'S'), new Card(13, 'S'), new Card(14, 'S')
+        ); // Highest
+        
+        testHands[1] = new Hands(
+            new Card(9, 'H'), new Card(10, 'H'), new Card(11, 'H'), new Card(12, 'H'), new Card(13, 'H')
+        ); // Second highest
+        
+        testHands[2] = new Hands(
+            new Card(14, 'C'), new Card(14, 'D'), new Card(14, 'S'), new Card(14, 'H'), new Card(2, 'C')
+        ); // Four of a kind Aces (third)
+        
+        testHands[3] = new Hands(
+            new Card(13, 'C'), new Card(13, 'D'), new Card(13, 'S'), new Card(13, 'H'), new Card(3, 'C')
+        ); // Four of a kind Kings (fourth)
+        
+        testHands[4] = new Hands(
+            new Card(8, 'C'), new Card(8, 'D'), new Card(8, 'S'), new Card(8, 'H'), new Card(4, 'C')
+        ); // Four of a kind 8s (lowest)
+        
+        // Insert in random order
+        myMaxHeap.insert(testHands[3]); // Kings
+        myMaxHeap.insert(testHands[1]); // Straight flush H13
+        myMaxHeap.insert(testHands[4]); // 8s
+        myMaxHeap.insert(testHands[0]); // Royal straight flush (highest)
+        myMaxHeap.insert(testHands[2]); // Aces
+        
+        // Verify size
+        if (myMaxHeap.getSize() != 5) {
+            System.out.println("\tAssert Failed! Expected size: 5, Actual: " + myMaxHeap.getSize());
+            passed = false;
+        }
+        
+        // Remove all hands in descending order
+        for (int i = 0; i < 5; i++) {
+            Hands removed = myMaxHeap.removeMax();
+            if (!testHands[i].isMyHandEqual(removed)) {
+                System.out.println("\tAssert Failed! Wrong hand removed at position " + i);
+                passed = false;
+            }
+            
+            // After each removal, verify the heap size decreases
+            if (myMaxHeap.getSize() != 4 - i) {
+                System.out.println("\tAssert Failed! Expected size after removal: " + (4 - i) + 
+                                ", Actual: " + myMaxHeap.getSize());
+                passed = false;
+            }
+        }
+        
+        // Verify heap is empty after all removals
+        if (!myMaxHeap.isEmpty()) {
+            System.out.println("\tAssert Failed! Heap should be empty");
+            passed = false;
+        }
+        
+        // Try one more removal (should throw exception)
+        try {
+            myMaxHeap.removeMax();
+            System.out.println("\tAssert Failed! Expected RuntimeException after emptying heap");
+            passed = false;
+        } catch (RuntimeException e) {
+            // Expected exception - this is good
+            passed = passed && true;
+        }
+        
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+
+
 }
