@@ -258,6 +258,8 @@ public class Hands {
             System.out.print("[RF]");
         else
             System.out.print("[IV]");
+
+        System.out.println();
     }
 
     // Lab 2: Required Helper Function
