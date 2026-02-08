@@ -15,6 +15,7 @@ public class HandsMaxHeap {
         capacity = bufSize;
         size=0;
         myHeap = new Hands[capacity+1]; //index 0 = dummy header
+        myHeap[0] = new Hands();
 
     }
 
@@ -37,9 +38,9 @@ public class HandsMaxHeap {
         // When this method is invoked by the constructor, the array myHeap is not organized as a heap yet;
         // the method should organize the array as a heap (disregarding the element at index 0) using the O(n)-time algorithm 
         
-        for (int i=1; i<=size; i++){
+        for (int i=size/2; i>=1; i--){
             //insert each hand into the heap
-            insert(myHeap[i]);
+            downHeapify(i);
         }
 
     }
@@ -234,31 +235,69 @@ public class HandsMaxHeap {
 
     }
 
-    public static void heapSort(Hands myHands[]) // sorts the array IN PLACE using the heap sort algorithm in descending order
-    {   
-        int n = myHands.length;
-
-        for (int i=1; i<n; i++){
-            int largestIndex = i;
-            Hands largestHand = myHands[largestIndex];
-
-            for (int j=i; j<=n; j++){
-
-                if (largestHand.isMyHandLarger(myHands[j]) == false){ //current indexed hand is larger
-                    largestIndex = j;
-                    largestHand = myHands[largestIndex]; //to avoid finding it each time for each comparison
-                }
-                
-            }
-
-            myHands[0] = myHands[largestIndex]; //serves as temp var
-            myHands[largestIndex] = myHands[i];
-            myHands[i] = myHands[0];
-            
+    public static void heapSort(Hands myHands[])
+    {
+        // Sort In place the incoming array myHands in DESCENDING order
+        // using the heap sort algorithm
+        
+        if (myHands == null || myHands.length <= 1) {
+            return;
         }
 
+        int n = myHands.length;
+
+        // Build max heap in O(n) time
+        for (int i = n/2 - 1; i >= 0; i--) {
+            heapify(myHands, n, i);
+        }
+
+        // Extract elements one by one to get descending order
+        for (int i = n - 1; i > 0; i--) {
+            // Swap root (largest) with current last element
+            Hands temp = myHands[0];
+            myHands[0] = myHands[i];
+            myHands[i] = temp;
+
+            // Heapify the reduced heap (size = i)
+            heapify(myHands, i, 0);
+        }
+        // After this loop, array is in ASCENDING order
+        
+        // Reverse to get DESCENDING order
+        for (int i = 0; i < n/2; i++) {
+            Hands temp = myHands[i];
+            myHands[i] = myHands[n - 1 - i];
+            myHands[n - 1 - i] = temp;
+        }
     }
 
+    private static void heapify(Hands[] arr, int n, int i) {
+        int largest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        // If left child exists and is larger than current largest
+        if (left < n && arr[left].isMyHandLarger(arr[largest])) {
+            largest = left;
+        }
+
+        // If right child exists and is larger than current largest
+        if (right < n && arr[right].isMyHandLarger(arr[largest])) {
+            largest = right;
+        }
+
+        // If largest is not root
+        if (largest != i) {
+            // Swap
+            Hands temp = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = temp;
+
+            // Recursively heapify the affected subtree
+            heapify(arr, n, largest);
+        }
+    }
+    
 
     // This is the Test Bench!!
 
