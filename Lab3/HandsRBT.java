@@ -1,4 +1,5 @@
-import java.util.Vector;
+// import java.util.Vector;
+import java.util.LinkedList;
 
 public class HandsRBT {
     
@@ -59,22 +60,48 @@ public class HandsRBT {
     /////////////////////////////////////////////////
 
     // [TODO]: Required Helper Functions for RBT Rotation
-    private void rotateLeft(HandsRBTNode thisNode)
-    {
-        // This method performs the Leftward Node Rotation (rotation between thisNode and its right child)
-        // don't forget to update children and parent pointers
+    // performs the Leftward Node Rotation (rotation between thisNode and its right child)
+    private void rotateLeft(HandsRBTNode thisNode) {
+
+        //reference beta and gramps so no nodes get orphan'd
+        HandsRBTNode beta = thisNode.right.left;
+        HandsRBTNode gramp = thisNode.parent;
+
+        //rotate between thisNode and its right child
+        thisNode.right.left = thisNode;
+        thisNode.parent = thisNode.right;
+
+        //reestablish gramps relation
+        replaceParentsChild(gramp, thisNode, thisNode.parent); 
+
+        //reestablish beta relation
+        thisNode.right = beta;
+        beta.parent = thisNode;
+
     }
 
     // [TODO]: Required Helper Functions for RBT Rotation
-    private void rotateRight(HandsRBTNode thisNode)
-    {
-        // This method performs the Rightward Node Rotation (rotation between thisNode and its left child)
-        // don't forget to update children and parent pointers
+    // Performs the Rightward Node Rotation (rotation between thisNode and its left child)
+    private void rotateRight(HandsRBTNode thisNode) {
+
+        //reference beta and gramps so no nodes get orphan'd
+        HandsRBTNode beta = thisNode.left.right;
+        HandsRBTNode gramp = thisNode.parent;
+
+        //rotate between thisNode and its left child
+        thisNode.left.right = thisNode;
+        thisNode.parent = thisNode.left;
+
+        //reestablish gramps relation
+        replaceParentsChild(gramp, thisNode, thisNode.parent); 
+
+        //reestablish beta relation
+        thisNode.left = beta;
+        beta.parent = thisNode;
 
     }
 
-    // [TODO]: You may add more private methods here to help
-    //         with rotation.
+    // [TODO]: You may add more private methods here to help with rotation.
 
 
     
@@ -114,15 +141,48 @@ public class HandsRBT {
 
     // [TODO]: Implement the RBT insertion algorithm; if the input Hand is already in the RBT do not insert
     
-    public void insert(Hands thisHand)
-    {
+    public void insert(Hands thisHand){
+
+        
         // Step 1: Traverse from the root to find the insertion point as in a BST
         // If thisHand is already in the RBT, exit 
         // Else go to step 2
+        
+        root = insert(thisHand, root);
+
+
+
         // Step 2: Insert the new node. If it is the root, colour it BLACK. Else colour it RED
         // If a red violation occurs, fix it by invoking the private method fixRedViolation
         // Else exit
         
+    }
+
+    private HandsRBTNode insert(Hands thisHand, HandsRBTNode thisNode)
+    {
+        if(thisNode == null)
+        {
+            thisNode = new HandsRBTNode(thisHand);
+            thisHand.printMyHand();
+            System.out.println(" Inserted new!");
+            return thisNode;
+        }
+        
+        if(thisHand.isMyHandSmaller(thisNode.myHand)) 
+        {
+            thisNode.left = insert(thisHand, thisNode.left);
+            System.out.println("Left");
+        }
+            
+        else if(thisHand.isMyHandLarger(thisNode.myHand))
+        {
+            thisNode.right = insert(thisHand, thisNode.right);
+            System.out.println("Right");
+        }
+            
+        else; // node already in tree, do nothing;
+
+        return thisNode;
     }
 
     // [TODO]: Implement the fixRedViolation algorithm   
