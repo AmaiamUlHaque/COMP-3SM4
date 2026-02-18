@@ -1,5 +1,4 @@
-// import java.util.Vector;
-import java.util.LinkedList;
+import java.util.Vector;
 
 public class HandsRBT {
     
@@ -59,7 +58,7 @@ public class HandsRBT {
     // Activity 1 - Design Rotation Algorithm
     /////////////////////////////////////////////////
 
-    // [TODO]: Required Helper Functions for RBT Rotation
+    // [DONE]: Required Helper Functions for RBT Rotation
     // performs the Leftward Node Rotation (rotation between thisNode and its right child)
     private void rotateLeft(HandsRBTNode thisNode) {
 
@@ -80,7 +79,7 @@ public class HandsRBT {
 
     }
 
-    // [TODO]: Required Helper Functions for RBT Rotation
+    // [DONE]: Required Helper Functions for RBT Rotation
     // Performs the Rightward Node Rotation (rotation between thisNode and its left child)
     private void rotateRight(HandsRBTNode thisNode) {
 
@@ -101,7 +100,7 @@ public class HandsRBT {
 
     }
 
-    // [TODO]: You may add more private methods here to help with rotation.
+    // [NO]: You may add more private methods here to help with rotation.
 
 
     
@@ -139,22 +138,30 @@ public class HandsRBT {
     // Activity 2 - Design Insertion and Red-Violation Correction
     /////////////////////////////////////////////////////////////////////////
 
-    // [TODO]: Implement the RBT insertion algorithm; if the input Hand is already in the RBT do not insert
+    // [DONE]: Implement the RBT insertion algorithm; if the input Hand is already in the RBT do not insert
     
     public void insert(Hands thisHand){
 
-        
         // Step 1: Traverse from the root to find the insertion point as in a BST
         // If thisHand is already in the RBT, exit 
         // Else go to step 2
-        
-        root = insert(thisHand, root);
-
-
-
         // Step 2: Insert the new node. If it is the root, colour it BLACK. Else colour it RED
         // If a red violation occurs, fix it by invoking the private method fixRedViolation
         // Else exit
+
+        if (isEmpty())
+        {
+            root = insert(thisHand, root);
+            root.colour =  BLACK; // colour = black
+            return;
+        }
+        
+        HandsRBTNode newNode = insert(thisHand, root); //idk what happens if its already inserted... 
+        newNode.colour = RED; //colour = red
+
+        if  (newNode.parent.colour == RED){
+            fixRedViolation(newNode);
+        }
         
     }
 
@@ -180,20 +187,84 @@ public class HandsRBT {
             System.out.println("Right");
         }
             
-        else; // node already in tree, do nothing;
+        else; 
+        // node already in tree, do nothing;
+        System.out.println(" Already inserted!");
 
         return thisNode;
     }
 
-    // [TODO]: Implement the fixRedViolation algorithm   
-    
+    // [DONE]: Implement the fixRedViolation algorithm 
     private void fixRedViolation(HandsRBTNode thisNode)
     {
-     // thisNode is node X from lecture notes; Uncle is node S from lecture notes; if Uncle is null, its colour is BLACK   
-     // Recall that there are 3 cases:
-     // Case 1. Red Uncle. (Here you have to check if the red violation moves up the tree; if so, correct it recursively or non-recursively - your choice)
-     // Case 2. Black Uncle & Outergrandchild
-     // Case 3. Black Uncle & Innergrandchild   
+        // thisNode is node X from lecture notes; Uncle is node S from lecture notes; if Uncle is null, its colour is BLACK   
+        // Recall that there are 3 cases:
+        // Case 1. Red Uncle. (Here you have to check if the red violation moves up the tree; if so, correct it recursively or non-recursively - your choice)
+        // Case 2. Black Uncle & Outergrandchild
+        // Case 3. Black Uncle & Innergrandchild   
+
+        
+        HandsRBTNode parent = thisNode.parent;
+        HandsRBTNode uncle = getSibling(parent);
+        HandsRBTNode gramp = thisNode.parent.parent;
+        
+        if (uncle.colour == RED) //flipCol(G,P,S)
+        {
+            gramp.colour = RED;
+            parent.colour = BLACK;
+            uncle.colour = BLACK;
+
+            if (gramp == root)
+            { 
+                root.colour = BLACK;
+            }
+
+            else if (gramp.parent.colour == RED){ // red violation moves up
+                fixRedViolation(gramp);
+            }
+
+            // else {} 
+            // (gramp.colour == BLACK) --> all good --> do nothing
+        }
+
+        else // uncle.colour = black
+        {   
+            if (gramp.left.left == thisNode) //left outer grandchild --> right rotate
+            {
+                rotateRight(gramp);
+                //flip colours
+                gramp.colour = !gramp.colour;
+                parent.colour = !parent.colour;
+
+            }
+
+            else if (gramp.right.right == thisNode) //right outer grandchild -- left rotate
+            {
+                rotateLeft(gramp);
+                //flip colours
+                gramp.colour = !gramp.colour;
+                parent.colour = !parent.colour;
+            }
+
+            else if (gramp.left.right == thisNode) //left inner grandchild
+            {
+                rotateLeft(parent);
+                rotateLeft(gramp);
+                //flip colours
+                gramp.colour = !gramp.colour;
+                thisNode.colour = !thisNode.colour;
+            }
+
+            else //(gramp.right.left == thisNode) //right inner grandchild
+            {
+                rotateRight(parent);
+                rotateRight(gramp);
+                //flip colours
+                gramp.colour = !gramp.colour;
+                thisNode.colour = !thisNode.colour;
+            }
+
+        }
        
     }
 
