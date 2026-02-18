@@ -282,10 +282,36 @@ public class HandsRBT {
 
     private void deleteHandsWithCard(Card thisCard)
     {
-    // Traverse through the entire RBT, and register all the nodes with hands containing thisCard in a Vector 
-    // Then, iterate through the Vector and delete every single registered node from RBT using the existing delete() method.
-    // Use the generic class Vector<E> in package java.util. See Java API specification
-    }      
+        // Traverse through the entire RBT, and register all the nodes with hands containing thisCard in a Vector 
+        // Then, iterate through the Vector and delete every single registered node from RBT using the existing delete() method.
+        // Use the generic class Vector<E> in package java.util. See Java API specification
+
+        //traverse through entire RBT --> inorder traversal --> L, C, R
+
+        HandsRBTNode currNode = root;  
+        traverse(root); 
+        if ( x != null){
+            //idk append to the list
+        }
+    
+    } 
+    
+    private void traverse(HandsRBTNode node, Card thisCard)
+    {
+        if (node == null)
+            return;
+
+        // Traverse left subtree
+        traverse(node.left, thisCard);
+
+        // Visit node
+        if () //check if this node has thisCard
+        {}
+
+        // Traverse right subtree
+        traverse(node.right, thisCard);
+    }
+    
     
     // Deletion Method 1 - promote the smallest of the right tree
     private HandsRBTNode findMin(HandsRBTNode thisNode)
