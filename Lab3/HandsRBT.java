@@ -159,7 +159,7 @@ public class HandsRBT {
         HandsRBTNode newNode = insert(thisHand, root); //idk what happens if its already inserted... 
         newNode.colour = RED; //colour = red
 
-        if  (newNode.parent.colour == RED){
+        if  (isBlack(newNode.parent) == false){ //checks if newNode.parent.colour == RED
             fixRedViolation(newNode);
         }
         
@@ -271,45 +271,52 @@ public class HandsRBT {
     // Activity 3 - Delete All Hands from RBT with cards from the consumed hand
     /////////////////////////////////////////////////////////////////////////
 
-    // Invoke this method to delete all the Nodes with Hands containing any card from the consumedHand
-    // This method invokes deleteHandsWithCard() for all 5 cards in the consumedHand
+    // Deletes all nodes with Hands containing any card from the consumedHand
     public void deleteInvalidHands(Hands consumedHand)
     {
-        
+        for (int i=0; i<5; i++) // invokes deleteHandsWithCard() for all 5 cards in the consumedHand
+        {
+            deleteHandsWithCard(consumedHand.getCard(i));
+        }
     }
 
-    // [TODO]: Implement this method that supports the card game activities. It deletes from RBT all hands with thisCard 
+    // [DONE]: Implement this method that supports the card game activities. It deletes from RBT all hands with thisCard 
 
     private void deleteHandsWithCard(Card thisCard)
     {
-        // Traverse through the entire RBT, and register all the nodes with hands containing thisCard in a Vector 
-        // Then, iterate through the Vector and delete every single registered node from RBT using the existing delete() method.
-        // Use the generic class Vector<E> in package java.util. See Java API specification
+        //list for deleting every single registered node
+        Vector<HandsRBTNode> deleteList = new  Vector<>();
 
         //traverse through entire RBT --> inorder traversal --> L, C, R
+        handsWithCard(root, thisCard, deleteList);
 
-        HandsRBTNode currNode = root;  
-        traverse(root); 
-        if ( x != null){
-            //idk append to the list
+        //iterate through list and delete each node
+        for (HandsRBTNode node: deleteList)
+        {
+            delete(node.myHand);
         }
-    
+
     } 
-    
-    private void traverse(HandsRBTNode node, Card thisCard)
+
+    //recursively checks if each hand has a card and appends it to a list
+    private void handsWithCard(HandsRBTNode node, Card thisCard, Vector<HandsRBTNode> deleteList) 
     {
         if (node == null)
+        {
             return;
+        }
 
         // Traverse left subtree
-        traverse(node.left, thisCard);
+        handsWithCard(node.left, thisCard, deleteList);
 
-        // Visit node
-        if () //check if this node has thisCard
-        {}
-
+        // Visit node        
+        if (node.myHand.hasCard(thisCard)) //hand has card --> append node to list
+        {
+            deleteList.add(node);
+        }
+        
         // Traverse right subtree
-        traverse(node.right, thisCard);
+        handsWithCard(node.right, thisCard, deleteList);
     }
     
     
