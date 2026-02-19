@@ -158,7 +158,7 @@ public class HandsRBT {
         
         HandsRBTNode newNode = insert(thisHand, root); //idk what happens if its already inserted... 
         newNode.colour = RED; //colour = red
-
+        
         if  (isBlack(newNode.parent) == false){ //checks if newNode.parent.colour == RED
             fixRedViolation(newNode);
         }
