@@ -75,7 +75,12 @@ public class HandsRBT {
 
         //reestablish beta relation
         thisNode.right = beta;
-        beta.parent = thisNode;
+
+        if (beta != null)
+        {
+            beta.parent = thisNode;
+        }
+        
 
     }
 
@@ -96,14 +101,16 @@ public class HandsRBT {
 
         //reestablish beta relation
         thisNode.left = beta;
-        beta.parent = thisNode;
+
+        if (beta != null)
+        {
+            beta.parent = thisNode;
+        }
 
     }
 
     // [NO]: You may add more private methods here to help with rotation.
 
-
-    
 
     public HandsRBTNode findNode(Hands thisHand)
     {
@@ -140,6 +147,64 @@ public class HandsRBT {
 
     // [DONE]: Implement the RBT insertion algorithm; if the input Hand is already in the RBT do not insert
     
+
+    public void inserttt(Hands thisHand) {
+        if (isEmpty()) {
+            root = new HandsRBTNode(thisHand);
+            root.colour = BLACK;
+            thisHand.printMyHand();
+            System.out.println(" Inserted new!");
+            return;
+        }
+        
+        // Search for insertion point and check if already exists
+        HandsRBTNode current = root;
+        HandsRBTNode parent = null;
+        
+        while (current != null) {
+            parent = current;
+            
+            if (thisHand.isMyHandSmaller(current.myHand)) {
+                current = current.left;
+            } else if (thisHand.isMyHandLarger(current.myHand)) {
+                current = current.right;
+            } else {
+                // Node already exists
+                System.out.println(" Already inserted!");
+                return;
+            }
+        }
+        
+        // Create new node
+        HandsRBTNode newNode = new HandsRBTNode(thisHand);
+        newNode.colour = RED;
+        newNode.parent = parent;
+        
+        // Attach to parent
+        if (thisHand.isMyHandSmaller(parent.myHand)) {
+            parent.left = newNode;
+        } else {
+            parent.right = newNode;
+        }
+        
+        thisHand.printMyHand();
+        System.out.println(" Inserted new!");
+        
+        // Fix red violation if needed
+        if (parent.colour == RED) {
+            fixRedViolation(newNode);
+        }
+        
+        // Ensure root is black
+        if (root != null) {
+            root.colour = BLACK;
+        }
+    }
+    
+
+
+
+
     public void insert(Hands thisHand){
 
         // Step 1: Traverse from the root to find the insertion point as in a BST
@@ -151,12 +216,15 @@ public class HandsRBT {
 
         if (isEmpty())
         {
-            root = insert(thisHand, root);
+            //root = insert(thisHand, root, null);
+            root = new HandsRBTNode(thisHand);
+            thisHand.printMyHand();
+            System.out.println(" Inserted new!");
             root.colour =  BLACK; //ensure root coloured correctly
             return;
         }
         
-        HandsRBTNode newNode = insert(thisHand, root); //idk what happens if its already inserted... 
+        HandsRBTNode newNode = insert(thisHand, root, null); 
         // newNode.colour = RED --> done inside private insert function
 
         if  (isBlack(newNode.parent) == false){ //checks if newNode.parent.colour == RED
@@ -166,12 +234,14 @@ public class HandsRBT {
         root.colour =  BLACK; //ensure root coloured correctly
     } 
 
-    private HandsRBTNode insert(Hands thisHand, HandsRBTNode thisNode)
+    private HandsRBTNode insert(Hands thisHand, HandsRBTNode thisNode, HandsRBTNode parent)
     {
         if(thisNode == null)
         {
             thisNode = new HandsRBTNode(thisHand);
             thisNode.colour = RED; //colour = red
+            thisNode.parent = parent; //establish connections
+
             thisHand.printMyHand();
             System.out.println(" Inserted new!");
             return thisNode;
@@ -179,13 +249,13 @@ public class HandsRBT {
         
         if(thisHand.isMyHandSmaller(thisNode.myHand)) 
         {
-            thisNode.left = insert(thisHand, thisNode.left);
+            thisNode.left = insert(thisHand, thisNode.left, thisNode);
             //System.out.println("Left");
         }
             
         else if(thisHand.isMyHandLarger(thisNode.myHand))
         {
-            thisNode.right = insert(thisHand, thisNode.right);
+            thisNode.right = insert(thisHand, thisNode.right, thisNode);
             //System.out.println("Right");
         }
             
@@ -194,8 +264,6 @@ public class HandsRBT {
             System.out.println(" Already inserted!");
         }
         
-        
-
         return thisNode;
     }
 
@@ -213,7 +281,7 @@ public class HandsRBT {
         HandsRBTNode uncle = getSibling(parent);
         HandsRBTNode gramp = thisNode.parent.parent;
         
-        if (uncle.colour == RED) // CASE 2: S = RED --> flipCol(G,P,S)
+        if (isBlack(uncle) == false) // Case 1. Red Uncle --> flipCol(G,P,S)
         {
             gramp.colour = RED;
             parent.colour = BLACK;
@@ -228,18 +296,18 @@ public class HandsRBT {
                 fixRedViolation(gramp);
             }
 
-            else
+            else // (gramp.colour == BLACK) --> all good --> do nothing
             {
-
+                System.out.println("gramp colour: " + gramp.colour);
             }
-            // (gramp.colour == BLACK) --> all good --> do nothing
+            
         }
 
-        else // CASE 1: S = BLACK
+        else // CASE 2-3: S = BLACK
         {   
-            // CASE 1A: X = outer grandchild --> rotate and flipCol(P,G)
+            // Case 2. Black Uncle & Outergrandchild --> rotate and flipCol(P,G)
 
-            if (gramp.left.left == thisNode) //left outer grandchild --> right rotate
+            if (gramp.left != null && gramp.left.left == thisNode) //left outer grandchild --> right rotate
             {
                 rotateRight(gramp); //rotate(P,G)
                 //flipCol(P,G)
@@ -247,7 +315,7 @@ public class HandsRBT {
                 parent.colour = !parent.colour;
             }
 
-            else if (gramp.right.right == thisNode) //right outer grandchild -- left rotate
+            else if (gramp.right != null && gramp.right.right == thisNode) //right outer grandchild -- left rotate
             {
                 rotateLeft(gramp); //rotate(P,G)
                 //flipCol(P,G)
@@ -256,29 +324,30 @@ public class HandsRBT {
             }
 
 
-            // CASE 1B: X = inner grandchild --> rotate(X,P) then rotate & flipCol(X,G)
+            // Case 3. Black Uncle & Innergrandchild --> rotate(X,P) then rotate & flipCol(X,G)
 
-            else if (gramp.left.right == thisNode) //left inner grandchild
+            else if (gramp.left != null && gramp.left.right == thisNode) //left inner grandchild
             {
                 rotateLeft(parent); //rotate(X,P)
                 rotateRight(gramp); //rotate(X,G)
                 //flipCol(X,G)
-                gramp.colour = !gramp.colour;
                 thisNode.colour = !thisNode.colour;
+                gramp.colour = !gramp.colour;
             }
 
-            else //(gramp.right.left == thisNode) //right inner grandchild
+            else if (gramp.right != null && gramp.right.left == thisNode) //right inner grandchild
             {
                 rotateRight(parent); //rotate(X,P)
                 rotateLeft(gramp); //rotate(X,G)
                 //flipCol(X,G)
-                gramp.colour = !gramp.colour;
                 thisNode.colour = !thisNode.colour;
+                gramp.colour = !gramp.colour;
             }
 
         }
-       
+
     }
+
 
     // Activity 3 - Delete All Hands from RBT with cards from the consumed hand
     /////////////////////////////////////////////////////////////////////////
