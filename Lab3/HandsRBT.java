@@ -152,24 +152,26 @@ public class HandsRBT {
         if (isEmpty())
         {
             root = insert(thisHand, root);
-            root.colour =  BLACK; // colour = black
+            root.colour =  BLACK; //ensure root coloured correctly
             return;
         }
         
         HandsRBTNode newNode = insert(thisHand, root); //idk what happens if its already inserted... 
-        newNode.colour = RED; //colour = red
-        
+        // newNode.colour = RED --> done inside private insert function
+
         if  (isBlack(newNode.parent) == false){ //checks if newNode.parent.colour == RED
             fixRedViolation(newNode);
         }
         
-    }
+        root.colour =  BLACK; //ensure root coloured correctly
+    } 
 
     private HandsRBTNode insert(Hands thisHand, HandsRBTNode thisNode)
     {
         if(thisNode == null)
         {
             thisNode = new HandsRBTNode(thisHand);
+            thisNode.colour = RED; //colour = red
             thisHand.printMyHand();
             System.out.println(" Inserted new!");
             return thisNode;
@@ -178,18 +180,21 @@ public class HandsRBT {
         if(thisHand.isMyHandSmaller(thisNode.myHand)) 
         {
             thisNode.left = insert(thisHand, thisNode.left);
-            System.out.println("Left");
+            //System.out.println("Left");
         }
             
         else if(thisHand.isMyHandLarger(thisNode.myHand))
         {
             thisNode.right = insert(thisHand, thisNode.right);
-            System.out.println("Right");
+            //System.out.println("Right");
         }
             
-        else; 
-        // node already in tree, do nothing;
-        System.out.println(" Already inserted!");
+        else // node already in tree, do nothing;
+        {
+            System.out.println(" Already inserted!");
+        }
+        
+        
 
         return thisNode;
     }
@@ -208,7 +213,7 @@ public class HandsRBT {
         HandsRBTNode uncle = getSibling(parent);
         HandsRBTNode gramp = thisNode.parent.parent;
         
-        if (uncle.colour == RED) //flipCol(G,P,S)
+        if (uncle.colour == RED) // CASE 2: S = RED --> flipCol(G,P,S)
         {
             gramp.colour = RED;
             parent.colour = BLACK;
@@ -219,47 +224,54 @@ public class HandsRBT {
                 root.colour = BLACK;
             }
 
-            else if (gramp.parent.colour == RED){ // red violation moves up
+            else if (isBlack(gramp.parent) == false){ // gramp.parent.colour == RED --> red violation moves up
                 fixRedViolation(gramp);
             }
 
-            // else {} 
+            else
+            {
+
+            }
             // (gramp.colour == BLACK) --> all good --> do nothing
         }
 
-        else // uncle.colour = black
+        else // CASE 1: S = BLACK
         {   
+            // CASE 1A: X = outer grandchild --> rotate and flipCol(P,G)
+
             if (gramp.left.left == thisNode) //left outer grandchild --> right rotate
             {
-                rotateRight(gramp);
-                //flip colours
+                rotateRight(gramp); //rotate(P,G)
+                //flipCol(P,G)
                 gramp.colour = !gramp.colour;
                 parent.colour = !parent.colour;
-
             }
 
             else if (gramp.right.right == thisNode) //right outer grandchild -- left rotate
             {
-                rotateLeft(gramp);
-                //flip colours
+                rotateLeft(gramp); //rotate(P,G)
+                //flipCol(P,G)
                 gramp.colour = !gramp.colour;
                 parent.colour = !parent.colour;
             }
 
+
+            // CASE 1B: X = inner grandchild --> rotate(X,P) then rotate & flipCol(X,G)
+
             else if (gramp.left.right == thisNode) //left inner grandchild
             {
-                rotateLeft(parent);
-                rotateLeft(gramp);
-                //flip colours
+                rotateLeft(parent); //rotate(X,P)
+                rotateRight(gramp); //rotate(X,G)
+                //flipCol(X,G)
                 gramp.colour = !gramp.colour;
                 thisNode.colour = !thisNode.colour;
             }
 
             else //(gramp.right.left == thisNode) //right inner grandchild
             {
-                rotateRight(parent);
-                rotateRight(gramp);
-                //flip colours
+                rotateRight(parent); //rotate(X,P)
+                rotateLeft(gramp); //rotate(X,G)
+                //flipCol(X,G)
                 gramp.colour = !gramp.colour;
                 thisNode.colour = !thisNode.colour;
             }
