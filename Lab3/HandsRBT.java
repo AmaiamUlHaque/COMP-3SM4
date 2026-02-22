@@ -147,64 +147,6 @@ public class HandsRBT {
 
     // [DONE]: Implement the RBT insertion algorithm; if the input Hand is already in the RBT do not insert
     
-
-    public void inserttt(Hands thisHand) {
-        if (isEmpty()) {
-            root = new HandsRBTNode(thisHand);
-            root.colour = BLACK;
-            thisHand.printMyHand();
-            System.out.println(" Inserted new!");
-            return;
-        }
-        
-        // Search for insertion point and check if already exists
-        HandsRBTNode current = root;
-        HandsRBTNode parent = null;
-        
-        while (current != null) {
-            parent = current;
-            
-            if (thisHand.isMyHandSmaller(current.myHand)) {
-                current = current.left;
-            } else if (thisHand.isMyHandLarger(current.myHand)) {
-                current = current.right;
-            } else {
-                // Node already exists
-                System.out.println(" Already inserted!");
-                return;
-            }
-        }
-        
-        // Create new node
-        HandsRBTNode newNode = new HandsRBTNode(thisHand);
-        newNode.colour = RED;
-        newNode.parent = parent;
-        
-        // Attach to parent
-        if (thisHand.isMyHandSmaller(parent.myHand)) {
-            parent.left = newNode;
-        } else {
-            parent.right = newNode;
-        }
-        
-        thisHand.printMyHand();
-        System.out.println(" Inserted new!");
-        
-        // Fix red violation if needed
-        if (parent.colour == RED) {
-            fixRedViolation(newNode);
-        }
-        
-        // Ensure root is black
-        if (root != null) {
-            root.colour = BLACK;
-        }
-    }
-    
-
-
-
-
     public void insert(Hands thisHand){ //original
 
         // Step 1: Traverse from the root to find the insertion point as in a BST
@@ -216,21 +158,20 @@ public class HandsRBT {
 
         if (isEmpty())
         {
-            //root = insert(thisHand, root, null);
             root = new HandsRBTNode(thisHand);
-            root.colour =  BLACK; //ensure root coloured correctly
+            root.colour =  BLACK;
             thisHand.printMyHand();
-            System.out.println(" Inserted new!");
+            System.out.println(" Inserted new root!");
             return;
         }
         
-        HandsRBTNode newNode = insert(thisHand, root, null); 
-        // newNode.colour = RED --> done inside private insert function
+        HandsRBTNode newNode = insert(thisHand, root, null);
 
-        if  (isBlack(newNode.parent) == false){ //checks if newNode.parent.colour == RED
+        if  (isBlack(newNode.parent) == false) //checks if newNode.parent.colour == RED
+        {
             fixRedViolation(newNode);
         }
-        
+
         root.colour =  BLACK; //ensure root coloured correctly
     } 
 
@@ -240,31 +181,37 @@ public class HandsRBT {
         {
             thisNode = new HandsRBTNode(thisHand);
             thisNode.colour = RED; //colour = red
-            thisNode.parent = parent; //establish connections
-
+            thisNode.parent = parent; //child to parent
             thisHand.printMyHand();
             System.out.println(" Inserted new!");
+
             return thisNode;
         }
         
         if(thisHand.isMyHandSmaller(thisNode.myHand)) 
         {
-            thisNode.left = insert(thisHand, thisNode.left, thisNode);
-            //System.out.println("Left");
+            HandsRBTNode newNode = insert(thisHand, thisNode.left, thisNode);
+            if (thisNode.left == null) {
+                thisNode.left = newNode;
+            }
+            return newNode;
         }
             
         else if(thisHand.isMyHandLarger(thisNode.myHand))
         {
-            thisNode.right = insert(thisHand, thisNode.right, thisNode);
-            //System.out.println("Right");
+            HandsRBTNode newNode = insert(thisHand, thisNode.right, thisNode);
+            if (thisNode.right == null) {
+                thisNode.right = newNode;
+            }
+            return newNode;
         }
             
         else // node already in tree, do nothing;
         {
             System.out.println(" Already inserted!");
+            return thisNode;
         }
         
-        return thisNode;
     }
 
     // [DONE]: Implement the fixRedViolation algorithm 
@@ -281,23 +228,33 @@ public class HandsRBT {
         HandsRBTNode uncle = getSibling(parent);
         HandsRBTNode gramp = thisNode.parent.parent;
         
+        System.out.println("does this even enter in here?");
+
         if (isBlack(uncle) == false) // Case 1. Red Uncle --> flipCol(G,P,S)
         {
+
+            System.out.println("entered case 1");
+
             gramp.colour = RED;
             parent.colour = BLACK;
             uncle.colour = BLACK;
 
-            if (gramp == root)
-            { 
-                root.colour = BLACK;
-            }
+            root.colour = BLACK;
 
-            else if (isBlack(gramp.parent) == false){ // gramp.parent.colour == RED --> red violation moves up
+            // if (gramp == root)
+            // { 
+            //     root.colour = BLACK;
+            // }
+
+            if (isBlack(gramp.parent) == false){ // gramp.parent.colour == RED --> red violation moves up
+                System.out.println("it enters case 1's fixredviolation");
                 fixRedViolation(gramp);
+                System.out.println("it leaves case 1's fixredviolation");
             }
 
-            else // (gramp.colour == BLACK) --> all good --> do nothing
+            else if (gramp.colour == BLACK) //--> all good --> do nothing
             {
+                System.out.println("printed because (gramp.colour == BLACK) = true");
                 System.out.println("gramp colour: " + gramp.colour);
             }
             
@@ -1075,6 +1032,8 @@ public class HandsRBT {
         System.out.println(">> Check Right Child of Root-Right-Left Path");
         passed &= assertEquals(testRoot.right.left.right, null);
 
+        testRBT.printRBT();
+
         // Tear Down
         totalPassed &= passed;
         if(passed) 
@@ -1140,6 +1099,8 @@ public class HandsRBT {
         passed &= assertEquals(testRoot.right.right.left, null);
         System.out.println(">> Check Right Child of Root-Right-Right Path");
         passed &= assertEquals(testRoot.right.right.right, null);
+
+        testRBT.printRBT();
 
         // Tear Down
         totalPassed &= passed;
