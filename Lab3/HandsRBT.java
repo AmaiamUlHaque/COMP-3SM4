@@ -205,7 +205,7 @@ public class HandsRBT {
 
 
 
-    public void insert(Hands thisHand){
+    public void insert(Hands thisHand){ //original
 
         // Step 1: Traverse from the root to find the insertion point as in a BST
         // If thisHand is already in the RBT, exit 
@@ -218,9 +218,9 @@ public class HandsRBT {
         {
             //root = insert(thisHand, root, null);
             root = new HandsRBTNode(thisHand);
+            root.colour =  BLACK; //ensure root coloured correctly
             thisHand.printMyHand();
             System.out.println(" Inserted new!");
-            root.colour =  BLACK; //ensure root coloured correctly
             return;
         }
         
@@ -236,7 +236,7 @@ public class HandsRBT {
 
     private HandsRBTNode insert(Hands thisHand, HandsRBTNode thisNode, HandsRBTNode parent)
     {
-        if(thisNode == null)
+        if (thisNode == null)
         {
             thisNode = new HandsRBTNode(thisHand);
             thisNode.colour = RED; //colour = red
@@ -268,7 +268,7 @@ public class HandsRBT {
     }
 
     // [DONE]: Implement the fixRedViolation algorithm 
-    private void fixRedViolation(HandsRBTNode thisNode)
+    private void fixRedViolation(HandsRBTNode thisNode) //original
     {
         // thisNode is node X from lecture notes; Uncle is node S from lecture notes; if Uncle is null, its colour is BLACK   
         // Recall that there are 3 cases:
