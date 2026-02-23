@@ -241,11 +241,6 @@ public class HandsRBT {
 
             root.colour = BLACK;
 
-            // if (gramp == root)
-            // { 
-            //     root.colour = BLACK;
-            // }
-
             if (isBlack(gramp.parent) == false){ // gramp.parent.colour == RED --> red violation moves up
                 System.out.println("it enters case 1's fixredviolation");
                 fixRedViolation(gramp);
@@ -824,7 +819,6 @@ public class HandsRBT {
         }
     }
 
-
     private static void testInsertCase1NR()
     {
         // Setup
@@ -1309,59 +1303,6 @@ public class HandsRBT {
         }
     }
 
-    private static void testCustomInsertCase4()
-    {
-        // Setup
-        System.out.println("============testCustomInsertCase4=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case where you will trigger Case 4 (doesn't matter if L or R)
-        // You may reuse the Case 4 / Case 5 test case setup, and modify the Hands input.
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-        
-        
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-
-    private static void testCustomInsertCase5()
-    {
-        // Setup
-        System.out.println("============testCustomInsertCase5=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case where you will trigger Case 5 (doesn't matter if L or R)
-        // You may reuse the Case 4 / Case 5 test case setup, and modify the Hands input.
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-        
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-
     private static void testDeleteHandsWithCard()
     {
         // Setup
@@ -1407,33 +1348,6 @@ public class HandsRBT {
         }
     }
 
-    private static void testCustomDeleteHandsWithCard()
-    {
-        // Setup
-        System.out.println("============testCustomDeleteHandsWithCard=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case that populates the RBT with at least 5 hands, with 3 of them containing the same card
-        // Then try remove all hands with the card, and confirm whether the resultant RBT contains only 2 hands without the card.
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-        
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-
-    
 
 
     // Assertions
@@ -1477,5 +1391,312 @@ public class HandsRBT {
 
         return true;
     }
+
+
+
+    // Custom test cases
+
+    
+    private static void testCustomInsertCase44()
+    {
+        // Setup
+        System.out.println("============testCustomInsertCase4=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Add your own custom test here
+        // Design another case where you will trigger Case 4 (doesn't matter if L or R)
+        // You may reuse the Case 4 / Case 5 test case setup, and modify the Hands input.
+
+        // WARNING!! remove these lines when adding test case here
+        System.out.println("Did you add the Custom Test Case?");
+        passed &= false;
+        // WARNING!! remove these lines when adding test case here
+        
+        
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+    private static void testCustomInsertCase55()
+    {
+        // Setup
+        System.out.println("============testCustomInsertCase5=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Add your own custom test here
+        // Design another case where you will trigger Case 5 (doesn't matter if L or R)
+        // You may reuse the Case 4 / Case 5 test case setup, and modify the Hands input.
+
+        // WARNING!! remove these lines when adding test case here
+        System.out.println("Did you add the Custom Test Case?");
+        passed &= false;
+        // WARNING!! remove these lines when adding test case here
+        
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+    private static void testCustomDeleteHandsWithCardd()
+    {
+        // Setup
+        System.out.println("============testCustomDeleteHandsWithCard=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Add your own custom test here
+        // Design another case that populates the RBT with at least 5 hands, with 3 of them containing the same card
+        // Then try remove all hands with the card, and confirm whether the resultant RBT contains only 2 hands without the card.
+
+        // WARNING!! remove these lines when adding test case here
+        System.out.println("Did you add the Custom Test Case?");
+        passed &= false;
+        // WARNING!! remove these lines when adding test case here
+        
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+    
+    private static void testCustomInsertCase4()
+{
+    // Setup
+    System.out.println("============testCustomInsertCase4=============");
+    boolean passed = true;
+    totalTestCount++;
+
+    // Custom test for Case 4L (Left Inner Grandchild)
+    // This will create a scenario where we have a black uncle and inner grandchild on the left
+    
+    HandsRBT testRBT = new HandsRBT();
+    Hands myHandsArray[] = new Hands[6];        
+    
+    // Create hands that will force a Case 4L scenario
+    // Root: Medium hand
+    myHandsArray[0] = new Hands(new Card(10, 'S'), new Card(10, 'D'), new Card(10, 'C'), new Card(5, 'H'), new Card(5, 'S')); // Full House
+    
+    // Right child: Larger than root
+    myHandsArray[1] = new Hands(new Card(12, 'S'), new Card(12, 'D'), new Card(12, 'C'), new Card(8, 'H'), new Card(8, 'S')); // Full House
+    
+    // Left child: Smaller than root
+    myHandsArray[2] = new Hands(new Card(7, 'S'), new Card(7, 'D'), new Card(7, 'C'), new Card(4, 'H'), new Card(4, 'S')); // Full House
+    
+    // This will be the inner grandchild on left side (Case 4L trigger)
+    myHandsArray[3] = new Hands(new Card(9, 'S'), new Card(9, 'D'), new Card(9, 'C'), new Card(6, 'H'), new Card(6, 'S')); // Full House
+    
+    // Additional nodes to create the right structure
+    myHandsArray[4] = new Hands(new Card(14, 'S'), new Card(14, 'D'), new Card(14, 'C'), new Card(2, 'H'), new Card(2, 'S')); // Full House
+    myHandsArray[5] = new Hands(new Card(11, 'S'), new Card(11, 'D'), new Card(11, 'C'), new Card(3, 'H'), new Card(3, 'S')); // Full House
+    
+    // Insert in specific order to trigger Case 4L
+    // First insert root
+    testRBT.insert(myHandsArray[0]); // 10's full house
+    
+    // Insert larger nodes to build right subtree
+    testRBT.insert(myHandsArray[1]); // 12's full house -> goes right
+    testRBT.insert(myHandsArray[4]); // 14's full house -> goes right-right
+    
+    // Insert smaller nodes to build left subtree
+    testRBT.insert(myHandsArray[2]); // 7's full house -> goes left
+    testRBT.insert(myHandsArray[5]); // 11's full house -> this will create structure
+    
+    // This insert should trigger Case 4L (black uncle, left inner grandchild)
+    testRBT.insert(myHandsArray[3]); // 9's full house -> left inner grandchild
+
+    HandsRBTNode testRoot = testRBT.getRoot();
+    
+    // Verify the tree structure after Case 4L correction
+    System.out.println(">> Check Root Node - Should be 10's Full House");
+    passed &= assertEquals(testRoot.myHand, myHandsArray[0]);
+    System.out.println(">> Check Root Colour (Always Black)");
+    passed &= assertEquals(testRoot.colour, BLACK); 
+    
+    System.out.println(">> Verify tree maintains RBT properties");
+    // Add more specific assertions based on expected structure after fixRedViolation
+    
+    testRBT.printRBT();
+
+    // Tear Down
+    totalPassed &= passed;
+    if(passed) 
+    {
+        System.out.println("\tPassed");
+        totalPassCount++;            
+    }
+}
+
+private static void testCustomInsertCase5()
+{
+    // Setup
+    System.out.println("============testCustomInsertCase5=============");
+    boolean passed = true;
+    totalTestCount++;
+
+    // Custom test for Case 5R (Right Outer Grandchild)
+    // This will create a scenario where we have a black uncle and outer grandchild on the right
+    
+    HandsRBT testRBT = new HandsRBT();
+    Hands myHandsArray[] = new Hands[6];        
+    
+    // Create hands that will force a Case 5R scenario
+    // Root: Medium hand
+    myHandsArray[0] = new Hands(new Card(8, 'S'), new Card(8, 'D'), new Card(8, 'C'), new Card(4, 'H'), new Card(4, 'S')); // Full House
+    
+    // Right child: Larger than root
+    myHandsArray[1] = new Hands(new Card(12, 'S'), new Card(12, 'D'), new Card(12, 'C'), new Card(6, 'H'), new Card(6, 'S')); // Full House
+    
+    // Left child: Smaller than root
+    myHandsArray[2] = new Hands(new Card(5, 'S'), new Card(5, 'D'), new Card(5, 'C'), new Card(2, 'H'), new Card(2, 'S')); // Full House
+    
+    // This will be the outer grandchild on right side (Case 5R trigger)
+    myHandsArray[3] = new Hands(new Card(14, 'S'), new Card(14, 'D'), new Card(14, 'C'), new Card(10, 'H'), new Card(10, 'S')); // Full House
+    
+    // Additional nodes to create the right structure
+    myHandsArray[4] = new Hands(new Card(10, 'S'), new Card(10, 'D'), new Card(10, 'C'), new Card(7, 'H'), new Card(7, 'S')); // Full House
+    myHandsArray[5] = new Hands(new Card(6, 'S'), new Card(6, 'D'), new Card(6, 'C'), new Card(3, 'H'), new Card(3, 'S')); // Full House
+    
+    // Insert in specific order to trigger Case 5R
+    // First insert root
+    testRBT.insert(myHandsArray[0]); // 8's full house
+    
+    // Insert smaller nodes to build left subtree
+    testRBT.insert(myHandsArray[2]); // 5's full house -> goes left
+    testRBT.insert(myHandsArray[5]); // 6's full house -> goes left-right
+    
+    // Insert larger nodes to build right subtree structure for Case 5R
+    testRBT.insert(myHandsArray[4]); // 10's full house -> goes right
+    testRBT.insert(myHandsArray[1]); // 12's full house -> goes right-right
+    
+    // This insert should trigger Case 5R (black uncle, right outer grandchild)
+    testRBT.insert(myHandsArray[3]); // 14's full house -> right-right-right (outer grandchild)
+
+    HandsRBTNode testRoot = testRBT.getRoot();
+    
+    // Verify the tree structure after Case 5R correction
+    System.out.println(">> Check Root Node - Should be 8's Full House");
+    passed &= assertEquals(testRoot.myHand, myHandsArray[0]);
+    System.out.println(">> Check Root Colour (Always Black)");
+    passed &= assertEquals(testRoot.colour, BLACK); 
+    
+    System.out.println(">> Verify tree maintains RBT properties");
+    // Add more specific assertions based on expected structure after fixRedViolation
+    
+    testRBT.printRBT();
+
+    // Tear Down
+    totalPassed &= passed;
+    if(passed) 
+    {
+        System.out.println("\tPassed");
+        totalPassCount++;            
+    }
+}
+
+private static void testCustomDeleteHandsWithCard()
+{
+    // Setup
+    System.out.println("============testCustomDeleteHandsWithCard=============");
+    boolean passed = true;
+    totalTestCount++;
+
+    // Custom test that populates RBT with 5 hands, 3 containing the same card
+    HandsRBT testRBT = new HandsRBT();
+    Hands myHandsArray[] = new Hands[5];  
+    Card targetCard = new Card(10, 'H'); // Card we'll delete
+    
+    // Create 5 hands, 3 of which contain the target card (10 of Hearts)
+    
+    // Hand 1: Contains 10H
+    myHandsArray[0] = new Hands(new Card(10, 'H'), new Card(10, 'D'), new Card(8, 'S'), new Card(8, 'C'), new Card(8, 'H'));
+    
+    // Hand 2: Does NOT contain 10H
+    myHandsArray[1] = new Hands(new Card(14, 'S'), new Card(14, 'D'), new Card(14, 'C'), new Card(2, 'H'), new Card(2, 'S'));
+    
+    // Hand 3: Contains 10H
+    myHandsArray[2] = new Hands(new Card(10, 'H'), new Card(9, 'D'), new Card(9, 'C'), new Card(9, 'H'), new Card(5, 'S'));
+    
+    // Hand 4: Does NOT contain 10H
+    myHandsArray[3] = new Hands(new Card(7, 'S'), new Card(7, 'D'), new Card(7, 'C'), new Card(4, 'H'), new Card(4, 'S'));
+    
+    // Hand 5: Contains 10H
+    myHandsArray[4] = new Hands(new Card(10, 'H'), new Card(11, 'D'), new Card(11, 'C'), new Card(11, 'H'), new Card(3, 'S'));
+    
+    // Insert all hands
+    for (int i = 0; i < 5; i++) {
+        testRBT.insert(myHandsArray[i]);
+    }
+    
+    System.out.println(">> Before deletion - Tree should have 5 nodes");
+    testRBT.printRBT();
+    
+    // Delete all hands with 10H
+    testRBT.deleteHandsWithCard(targetCard);
+    
+    System.out.println(">> After deletion - Tree should have 2 nodes (hands without 10H)");
+    testRBT.printRBT();
+    
+    // Verify only the hands without 10H remain
+    HandsRBTNode root = testRBT.getRoot();
+    
+    // Check that the remaining hands don't contain 10H
+    // We need to traverse the tree to check all nodes
+    passed &= verifyNoCardInTree(testRBT, targetCard);
+    
+    // Also verify we have exactly 2 nodes
+    int nodeCount = countNodes(testRBT.getRoot());
+    System.out.println(">> Node count after deletion: " + nodeCount);
+    passed &= (nodeCount == 2)? true:false;
+    
+    // Tear Down
+    totalPassed &= passed;
+    if(passed) 
+    {
+        System.out.println("\tPassed");
+        totalPassCount++;            
+    }
+}
+
+// Helper method for testCustomDeleteHandsWithCard
+private static boolean verifyNoCardInTree(HandsRBT rbt, Card card) {
+    return verifyNoCardInNode(rbt.getRoot(), card);
+}
+
+private static boolean verifyNoCardInNode(HandsRBTNode node, Card card) {
+    if (node == null) return true;
+    
+    if (node.myHand.hasCard(card)) {
+        System.out.println("Found forbidden card in node: ");
+        node.myHand.printMyHand();
+        System.out.println();
+        return false;
+    }
+    
+    return verifyNoCardInNode(node.left, card) && verifyNoCardInNode(node.right, card);
+}
+
+// Helper method to count nodes
+private static int countNodes(HandsRBTNode node) {
+    if (node == null) return 0;
+    return 1 + countNodes(node.left) + countNodes(node.right);
+}
 
 }
