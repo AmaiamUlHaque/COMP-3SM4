@@ -46,13 +46,63 @@ public class ModelCode_CardGame {
         //  - If you have successfully completed Lab 2, you may replace HandsBST with your own HandsMaxHeap
         //    to improve the program performance.
 
+        //shuffle and disturibute cards
+        myCards = myCardPool.getRandomCards(myPocketSize);
+        aiCards = myCardPool.getRandomCards(aiPocketSize);
+        
+        //sort cards
+        sortCards(myCards);
+        sortCards(aiCards);
+        
+        //assign serial numbers to player's cards --> just print on player screen and num = index
+
+        // for (Card card : myCards){
+        // }
+        // for (int i=0; i<myPocketSize; i++){
+        //     myCards[i].
+        // }
+
+        //instantiate HandsRBT for player and generate hands
+        HandsRBT myHandsRBT = new HandsRBT();
+        generateHandsIntoRBT(myCards, myHandsRBT);
+
+        //instantiate HandsBST for player and generate hands
+        HandsBST aiHandsBST = new HandsBST();
+        generateHandsIntoBST(aiCards, aiHandsBST);
+
+
+        
         // Step 2 - Game Loop Logic
         //  - Given that POCKETSIZE = 25 and a 5-card hand is consumed at each round, our game loop should only 
         //    repeat 5 times.  You can optionally parameterize the iteration count for scalability.
 
+        for (int i = 0; i<5; i++){
+
             // Step 2-1 : Print Both AI and Player Pocket Cards for Strategy Analysis
             //            - Also check if RBT is empty.  If yes, notify player that he/she is out of moves.
             //            - When printing the Player pocket cards, you **MUST** print with serial number.
+            
+            System.out.println("AI POCKET CARDS: ");
+            for (Card card : aiCards){
+                card.printCard();
+            }
+            System.out.println("AI BST: ");
+            aiHandsBST.printBST();
+
+
+            if (myHandsRBT.isEmpty()){
+                System.out.println("Player out of moves");
+            }
+            else {
+                System.out.println("PLAYER POCKET CARDS: ");
+                for (int j=0; j<myPocketSize; j++){
+                    myCards[j].printCard();
+                    System.out.print("Serial number: " + j+1);
+                }
+                System.out.println("PLAYER BST: ");
+                myHandsRBT.printRBT();
+            }
+
 
             // Step 2-2 : Use the provided getUserHand() method to allow player to pick the 5-card hand from
             //            the pocket cards.
@@ -60,6 +110,25 @@ public class ModelCode_CardGame {
             //              -  If this hand is not in the RBT and the RBT is not empty
             //                 notify the player that there are still valid 5-card hands and cannot pass.
             //                 Wait for Player to input another hand
+
+
+
+            int cardsChosenNum = 0;
+            Card[] cardsChosen = new Card[5];
+            
+            while (!myHandsRBT.isEmpty() && cardsChosenNum < 5){
+                //get player input
+                String input = myInputScanner.next("Enter a serial num of card #" + cardsChosenNum+1 + ": ");
+                int serialNum = Integer.parseInt(input); //add error/parsing check
+                // String max = (String)myPocketSize;
+                // String max1 = String(myPocketSize+1);
+                // if (input >= "1" && input <= max){ //idk how to make 'mypocketsize'
+                // }
+                if (serialNum <= 1 && serialNum>=myPocketSize){
+                    myCards[serialNum-1]
+                }
+            }
+
 
             // Step 2-3 : Save the chosen hand as "PLAYERHAND", and update pocket card and RBT
             //            - Delete the invalid hands from the RBT using deleteInvalidHands()
@@ -78,7 +147,9 @@ public class ModelCode_CardGame {
             //            - Print both PLAYERHAND and AIHAND for visual confirmation
             //            - Compare hands, and increase the score for the respective party who wins the round
             //            - An unlikely Draw (no winner) condition will result in no score increase for either party
-
+        
+        
+        }
 
         // Step 3 - Report the Results
         //  - This part is easy.  Refer to the provided sample execution for printout format
