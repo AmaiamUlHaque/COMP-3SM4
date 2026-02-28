@@ -111,29 +111,23 @@ public class ModelCode_CardGame {
             //                 notify the player that there are still valid 5-card hands and cannot pass.
             //                 Wait for Player to input another hand
 
-
-
-            int cardsChosenNum = 0;
-            Card[] cardsChosen = new Card[5];
+            boolean check = false;
+            Hands PLAYERHAND;
+            do {
+                System.out.println("PLAYER CARD SELECTION: ");
+                PLAYERHAND = getUserHand(myCards);
+                check = PLAYERHAND.isAValidHand();
+            } while (!myHandsRBT.isEmpty() && check); //while tree not empty and valid hands available
+                
             
-            while (!myHandsRBT.isEmpty() && cardsChosenNum < 5){
-                //get player input
-                String input = myInputScanner.next("Enter a serial num of card #" + cardsChosenNum+1 + ": ");
-                int serialNum = Integer.parseInt(input); //add error/parsing check
-                // String max = (String)myPocketSize;
-                // String max1 = String(myPocketSize+1);
-                // if (input >= "1" && input <= max){ //idk how to make 'mypocketsize'
-                // }
-                if (serialNum <= 1 && serialNum>=myPocketSize){
-                    myCards[serialNum-1]
-                }
-            }
-
 
             // Step 2-3 : Save the chosen hand as "PLAYERHAND", and update pocket card and RBT
             //            - Delete the invalid hands from the RBT using deleteInvalidHands()
             //            - Remove the consumed 5 cards from the pocket cards. 
             //            - Remember to reduce the pocket size by 5.
+
+
+
 
             // Step 2-4 : Using the logic from Lab 2, construct the Aggressive AI Logic
             //            - If you have completed Lab 2, you may use HandsMaxHeap.  
