@@ -126,7 +126,8 @@ public class ModelCode_CardGame {
             //            - Remove the consumed 5 cards from the pocket cards. 
             //            - Remember to reduce the pocket size by 5.
 
-
+            myHandsRBT.deleteInvalidHands(PLAYERHAND);
+            
 
 
             // Step 2-4 : Using the logic from Lab 2, construct the Aggressive AI Logic
