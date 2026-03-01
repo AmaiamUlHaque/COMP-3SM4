@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class ModelCode_CardGame {
+public class ModelCode_CardGame_OG {
 
     public static final int POCKETSIZE = 25;
     public static Scanner myInputScanner;          
