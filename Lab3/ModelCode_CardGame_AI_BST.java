@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class ModelCode_CardGame2
+public class ModelCode_CardGame_AI_BST
 {
 
     public static final int POCKETSIZE = 25;
@@ -110,7 +110,7 @@ public class ModelCode_CardGame2
                 System.out.println("Here are all your valid hand options:");
                 printValidHandsList(myRBT);
             }
-            
+
             System.out.println("--- PLAYER POCKET CARDS (Round " + round + ") ---");
             if (myPocketSize > 0) {
                 for (int i = 0; i < myPocketSize; i++) {
