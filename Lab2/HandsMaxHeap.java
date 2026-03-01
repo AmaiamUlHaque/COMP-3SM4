@@ -66,26 +66,6 @@ public class HandsMaxHeap {
 
     // [Problem 1-2] Implement the Downward Heap Reorganization Private Method from the provided index 
 
-    // private void downHeapifyyy(int index) //percolateDown
-    // {
-    //     //percolateDown the Heap Node at index; stop when it fits
-    //     Hands key = myHeap[index];
-    //     int child = 2*index; //left child
-    //    
-    //     while (child <= size){
-    //
-    //         if (child > size && myHeap[child+1].isMyHandLarger(myHeap[child])){
-    //             child++; //right child
-    //         }
-    //         if (myHeap[child].isMyHandSmaller(key)){
-    //             myHeap[index] = myHeap[child];
-    //             index = child;
-    //             child = 2*index;
-    //         }
-    //     }
-    //     myHeap[index]=key;
-    // } 
-
     private void downHeapify(int index)
     {
         while (leftChild(index) <= size) { //check if the node at index is a leaf (has no children)
@@ -117,29 +97,6 @@ public class HandsMaxHeap {
     }
 
     // [Problem 1-3] Implement Upward Heap Reorganization Private Method from the provided index 
-
-    // private void heapifyUppp(int index) //percolateUp
-    // {   
-    //     // percolateUp the Heap Node at index; stop when it fits
-    //     // for this, first copy the Heap Node at index into temp
-    //     // compare the temp node against the parent node and so on               
-    //  
-    //     Hands key = myHeap[index];
-    //     int parent = index/2;
-    //
-    //     while (parent <= size){
-    //
-    //         if (myHeap[parent].isMyHandLarger(key)){
-    //             myHeap[index] = myHeap[parent];
-    //             index = parent;
-    //             parent = index/2;
-    //         }
-    //
-    //     }
-    //
-    //     myHeap[index]=key;
-    //
-    // }
 
     private void heapifyUp(int index) //percolateUp
     {
@@ -176,22 +133,21 @@ public class HandsMaxHeap {
         // (the capacity of the new heap should be twice larger) and copy the data over     
 
         if (size == capacity){ //no more room --> add more
-
-            Hands[] temp = myHeap;
-            myHeap = new Hands[2*capacity];
-
-            for (int i=1; i<=size; i++){
-                myHeap[i] = temp[i];
+            int newCapacity = capacity * 2;
+            Hands[] newHeap = new Hands[newCapacity + 1]; // +1 for dummy
+            
+            // Copy all existing elements including dummy
+            for (int i = 0; i <= size; i++){
+                newHeap[i] = myHeap[i];
             }
-
-            capacity *= 2;
-
+            
+            myHeap = newHeap;
+            capacity = newCapacity;
         }
 
         size++;
         myHeap[size] = thisHand;
         heapifyUp(size); //restores heap ordering property
-
     }
 
     public Hands removeMax() throws RuntimeException //remove the largest Hand from the heap; if the heap is empty throw a RuntimeException
@@ -933,7 +889,7 @@ public class HandsMaxHeap {
         return true;
     }
     
-   private static void CustomTestInsert1(){
+    private static void CustomTestInsert1(){
         // Setup
         System.out.println("============CustomTestInsert1=============");
         boolean passed = true;
@@ -961,14 +917,19 @@ public class HandsMaxHeap {
             myMaxHeap.insert(hand);
         }
         
-        // Verify heap size and capacity after resizing
+        // Verify heap size
         if (myMaxHeap.getSize() != 3) {
             System.out.println("\tAssert Failed! Expected size: 3, Actual: " + myMaxHeap.getSize());
             passed = false;
         }
         
-        if (myMaxHeap.capacity != 2) { // Should have doubled from 1 to 2
-            System.out.println("\tAssert Failed! Expected capacity: 2, Actual: " + myMaxHeap.capacity);
+        // After inserting 3 hands starting with capacity 1:
+        // - First insert: size=1, capacity=1 (no resize)
+        // - Second insert: size==capacity (1==1), resize to capacity=2
+        // - Third insert: size==capacity (2==2), resize to capacity=4
+        // So final capacity should be 4
+        if (myMaxHeap.capacity != 4) {
+            System.out.println("\tAssert Failed! Expected capacity: 4, Actual: " + myMaxHeap.capacity);
             passed = false;
         }
         
@@ -987,7 +948,6 @@ public class HandsMaxHeap {
             totalPassCount++;            
         }
     }
-
     private static void CustomTestInsert2(){
         // Setup
         System.out.println("============CustomTestInsert2=============");
