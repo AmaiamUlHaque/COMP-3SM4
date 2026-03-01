@@ -120,9 +120,6 @@ public class HandsRBT {
 
         while(node != null)
         {
-            // System.out.println();
-            // node.myHand.printMyHand();
-
             if(node.myHand.isMyHandLarger(thisHand)) 
             {
                 node = node.left;
@@ -133,7 +130,6 @@ public class HandsRBT {
             }
             else // Matched
             {
-                // System.out.println("\nFOUND!");
                 return node;
             }
         }
@@ -227,14 +223,9 @@ public class HandsRBT {
         HandsRBTNode parent = thisNode.parent;
         HandsRBTNode uncle = getSibling(parent);
         HandsRBTNode gramp = thisNode.parent.parent;
-        
-        System.out.println("does this even enter in here?");
 
         if (isBlack(uncle) == false) // Case 1. Red Uncle --> flipCol(G,P,S)
         {
-
-            System.out.println("entered case 1");
-
             gramp.colour = RED;
             parent.colour = BLACK;
             uncle.colour = BLACK;
@@ -242,14 +233,11 @@ public class HandsRBT {
             root.colour = BLACK;
 
             if (isBlack(gramp.parent) == false){ // gramp.parent.colour == RED --> red violation moves up
-                System.out.println("it enters case 1's fixredviolation");
                 fixRedViolation(gramp);
-                System.out.println("it leaves case 1's fixredviolation");
             }
 
             else if (gramp.colour == BLACK) //--> all good --> do nothing
             {
-                System.out.println("printed because (gramp.colour == BLACK) = true");
                 System.out.println("gramp colour: " + gramp.colour);
             }
             
