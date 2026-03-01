@@ -948,6 +948,7 @@ public class HandsMaxHeap {
             totalPassCount++;            
         }
     }
+    
     private static void CustomTestInsert2(){
         // Setup
         System.out.println("============CustomTestInsert2=============");
