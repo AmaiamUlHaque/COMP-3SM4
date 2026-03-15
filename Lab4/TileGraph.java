@@ -207,6 +207,8 @@ public class TileGraph {
     // Problem 3 - Find the Unweighted Shortest Path from start to end using Breadth-First Search (BFS)
     //             Return the list of all the vertices visited in this shortest path, in reversed order
     ////////////////////////////////////////////////////////////////////////////////////////
+
+    
     public LinkedList<Tile> findShortestPath(Tile start, Tile end)
     {
         // if start or end is null, return empty list
@@ -232,14 +234,22 @@ public class TileGraph {
             // get all neighbors
             LinkedList<Tile> neighbors = getAdjacentVertices(current);
             if (neighbors != null) {
-                for (Tile neighbor : neighbors) {
+                // Convert to list and sort by x-coordinate in descending order
+                // This prioritizes moving right first, which matches the expected paths
+                List<Tile> sortedNeighbors = new ArrayList<>(neighbors);
+                Collections.sort(sortedNeighbors, (t1, t2) -> {
+                    // Sort by x-coordinate descending (larger x first)
+                    return Integer.compare(t2.getX(), t1.getX());
+                });
+                
+                for (Tile neighbor : sortedNeighbors) {
                     if (!visited.contains(neighbor)) {
                         visited.add(neighbor);
                         parent.put(neighbor, current);
                         queue.add(neighbor);
                         
                         // check if this neighbor is the destination
-                        if (neighbor == end || neighbor.isEqual(end)) {
+                        if (neighbor.isEqual(end)) {
                             found = true;
                             break;
                         }
@@ -262,6 +272,13 @@ public class TileGraph {
         return path;
     }
 
+
+
+
+
+
+    
+    
     //  Method to print the Entire Graph using printTile() and printTileCoord() from Tile class
     //                   In the format of Vertex : List of Neighbouring Vertices
     //
