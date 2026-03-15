@@ -40,7 +40,7 @@ public class Tracer
         yPos = y;
         mapRef = mRef.getMapRef();
         startTile = mRef.getStartTile();
-        endTile = mRef.getEndTile();
+        endTile = mRef.getGoalTile();
 
         tileCount = 0;
         speed = 100;

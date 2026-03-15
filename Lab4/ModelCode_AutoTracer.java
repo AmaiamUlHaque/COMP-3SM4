@@ -1,4 +1,4 @@
-package Lab3Model;
+//package Lab3Model;
 
 import java.util.concurrent.TimeUnit;
 import java.util.*;
