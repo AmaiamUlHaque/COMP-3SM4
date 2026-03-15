@@ -625,30 +625,7 @@ public class TileGraph {
         }
     }
     
-    private static void testAddEdgeCustom()
-    {
-        // Setup
-        System.out.println("============testAddEdgeCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your edge insertion with minimally 8
-        // vertices and 12 edges
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
+    
     
 
 
@@ -833,32 +810,7 @@ public class TileGraph {
     }
        
     
-    private static void testGetAdjacentVerticesCustom()
-    {
-        // Setup
-        System.out.println("============testGetNeighboursCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your get neighbour method
-        // You must have minimally 5 vertices and 5 edges in the graph,
-        // Then test getNeighbours from at least one selected vertices.
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-    
+   
 
 
     // Depth-First Traversal
@@ -1012,31 +964,7 @@ public class TileGraph {
         }
     }
     
-    private static void testDFTCustom()
-    {
-        // Setup
-        System.out.println("============testDFTCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your get neighbour method
-        // You must have minimally 8 vertices and 12 edges in the graph,
-        // Then carry out DFT from a selected vertex.
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
+    
     
 
 
@@ -1199,35 +1127,7 @@ public class TileGraph {
         }
     }
     
-    private static void testFindShortestPathCustom()
-    {
-        // Setup
-        System.out.println("============testFindShortestPathCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your get neighbour method
-        // You must have minimally 8 vertices and 12 edges in the graph,
-        // Then carry out Find Shortest Path from a selected Starting vertex to
-        // a selected Goal vertex
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
     
-
-
 
 
     private static boolean assertEquals(Tile expected, Tile actual)
@@ -1381,8 +1281,113 @@ public class TileGraph {
 
 
 
+    private static void testAddEdgeCustom()
+    {
+        // Setup
+        System.out.println("============testAddEdgeCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Add your own custom test here
+        // Design another case to test your edge insertion with minimally 8
+        // vertices and 12 edges
+
+        // WARNING!! remove these lines when adding test case here
+        System.out.println("Did you add the Custom Test Case?");
+        passed &= false;
+        // WARNING!! remove these lines when adding test case here
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
 
 
+     private static void testGetAdjacentVerticesCustom()
+    {
+        // Setup
+        System.out.println("============testGetNeighboursCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Add your own custom test here
+        // Design another case to test your get neighbour method
+        // You must have minimally 5 vertices and 5 edges in the graph,
+        // Then test getNeighbours from at least one selected vertices.
+
+        // WARNING!! remove these lines when adding test case here
+        System.out.println("Did you add the Custom Test Case?");
+        passed &= false;
+        // WARNING!! remove these lines when adding test case here
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+    
+
+    private static void testDFTCustom()
+    {
+        // Setup
+        System.out.println("============testDFTCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Add your own custom test here
+        // Design another case to test your get neighbour method
+        // You must have minimally 8 vertices and 12 edges in the graph,
+        // Then carry out DFT from a selected vertex.
+
+        // WARNING!! remove these lines when adding test case here
+        System.out.println("Did you add the Custom Test Case?");
+        passed &= false;
+        // WARNING!! remove these lines when adding test case here
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+
+    private static void testFindShortestPathCustom()
+    {
+        // Setup
+        System.out.println("============testFindShortestPathCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Add your own custom test here
+        // Design another case to test your get neighbour method
+        // You must have minimally 8 vertices and 12 edges in the graph,
+        // Then carry out Find Shortest Path from a selected Starting vertex to
+        // a selected Goal vertex
+
+        // WARNING!! remove these lines when adding test case here
+        System.out.println("Did you add the Custom Test Case?");
+        passed &= false;
+        // WARNING!! remove these lines when adding test case here
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+    
 
 
 
