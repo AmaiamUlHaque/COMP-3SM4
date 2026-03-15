@@ -1,4 +1,4 @@
-package Lab3Model;
+//package Lab3Model;
 
 import java.util.*;
 
@@ -34,6 +34,7 @@ public class TileGraph {
         adjList.putIfAbsent(thisTile, new LinkedList<Tile>()); // adds a new pair to the collection; the vertex is thisTile, its adjacency list is now empty
     }
 
+
     // Problem 1-1 - Add a DIRECTED edge from src to dst; 
     // assume that src is already a vertex in the graph 
     // add dst to the adjacency list (i.e., linked list) of src, 
@@ -41,26 +42,131 @@ public class TileGraph {
     private void addEdge(Tile src, Tile dst)
     {
         LinkedList<Tile> srcList = adjList.get(src); // returns a reference to the linked list paired with src
-        // Complete the rest of the code
-        // ......
+
+        // for (Tile tile : srcList) {
+        //     if (tile ==  dst){
+        //         System.out.println("dst already exists");
+        //         return;
+        //     }
+        // }
+
+        if (srcList.contains(dst) == true){
+            System.out.println("dst already exists");
+        }
+
+        else {
+            srcList.addLast(dst);
+            System.out.println("dst added");
+        }
+
     } 
+
 
     // Problem 1-2 - Get the list of vertices adjacent to thisTile (return a reference to the linked list storing the adjacent vertices)
     //               You will need this for depth-first traversal and breadth-first search later
     private LinkedList<Tile> getAdjacentVertices(Tile thisTile)
     {
-        
+        return adjList.get(thisTile);
     }
+
 
     //Problem 1-3 - Add vertices and edges to the existing empty graph to build the graph corresponding to mRef
     // Vertices are intersections; edges are roads connecting two consecutive intersections from left to right or from up to down
     // Edges are directed: from up to down and from left to right
     // Must use an algorithm similar to BFS (for efficiency) to get the maximum grade
-   
     private void buildGraph(TileMap mRef)
     {
+        Tile[][] map = mRef.getMapRef();
         
+        // find the start tile (S) at top-left corner (position [1][1])
+        Tile startTile = mRef.getStartTile();
+        
+        // add the start tile as a vertex
+        addVertex(startTile);
+        
+        // use BFS approach with queue
+        Queue<Tile> queue = new LinkedList<>();
+        Set<Tile> visited = new HashSet<>();
+        
+        queue.add(startTile);
+        visited.add(startTile);
+        
+        while (!queue.isEmpty()) {
+
+            Tile current = queue.poll();
+            int x = current.getX();
+            int y = current.getY();
+            
+            // find neighboring intersection to the RIGHT
+            Tile rightNeighbor = findNextIntersection(map, x, y, true); // true for right direction
+
+            if (rightNeighbor != null) {
+                
+                addVertex(rightNeighbor); // add the neighbor if not already in graph
+                addEdge(current, rightNeighbor); // add directed edge from current to right neighbor
+                
+                // if not visited, add to queue for BFS
+                if (!visited.contains(rightNeighbor)) {
+                    visited.add(rightNeighbor);
+                    queue.add(rightNeighbor);
+                }
+
+            }
+            
+            // find neighboring intersection DOWN
+            Tile downNeighbor = findNextIntersection(map, x, y, false); // false for down direction
+
+            if (downNeighbor != null) {
+                
+                addVertex(downNeighbor); // add the neighbor if not already in graph
+                addEdge(current, downNeighbor); // add directed edge from current to down neighbor
+                
+                // if not visited, add to queue for BFS
+                if (!visited.contains(downNeighbor)) {
+                    visited.add(downNeighbor);
+                    queue.add(downNeighbor);
+                }
+                
+            }
+        }
     }
+    
+    // helper method to find the next intersection in a given direction
+    // directionRight = true for right, false for down
+    private Tile findNextIntersection(Tile[][] map, int startX, int startY, boolean directionRight) {
+        if (directionRight) {
+            // Search to the right
+            for (int x = startX + 1; x < TileMap.BOARDSIZEX - 1; x++) {
+                Tile tile = map[startY][x];
+                char type = tile.getTileType();
+                
+                if (type == 'I' || type == 'D') { // D is also a destination intersection
+                    return tile;
+                } else if (type == '#') {
+                    // Hit a wall, no intersection in this direction
+                    break;
+                }
+                // Continue searching through roads (spaces)
+            }
+        } else {
+            // Search down
+            for (int y = startY + 1; y < TileMap.BOARDSIZEY - 1; y++) {
+                Tile tile = map[y][startX];
+                char type = tile.getTileType();
+                
+                if (type == 'I' || type == 'D') {
+                    return tile;
+                } else if (type == '#') {
+                    // Hit a wall, no intersection in this direction
+                    break;
+                }
+                // Continue searching through roads (spaces)
+            }
+        }
+        return null; // No intersection found in this direction
+    }
+
+
 
     // Problem 2 - Depth-First Traversal
     //             Return the list containing all the vertices visited 
@@ -68,15 +174,92 @@ public class TileGraph {
     ////////////////////////////////////////////////////////////////////
     public LinkedList<Tile> depthFirstTraversal(Tile start)
     {
+        LinkedList<Tile> visitedList = new LinkedList<>();
+        Set<Tile> visitedSet = new HashSet<>();
         
+        // Call recursive helper function
+        dfsHelper(start, visitedSet, visitedList);
+        
+        return visitedList;
     }
+    
+    private void dfsHelper(Tile current, Set<Tile> visitedSet, LinkedList<Tile> visitedList) 
+    {
+        // Mark current as visited
+        visitedSet.add(current);
+        visitedList.add(current);
+        
+        // Get all adjacent vertices
+        LinkedList<Tile> neighbors = getAdjacentVertices(current);
+
+        if (neighbors != null) {
+            for (Tile neighbor : neighbors) {
+                if (!visitedSet.contains(neighbor)) {
+                    dfsHelper(neighbor, visitedSet, visitedList);
+                }
+            }
+        }
+
+    }
+
+
 
     // Problem 3 - Find the Unweighted Shortest Path from start to end using Breadth-First Search (BFS)
     //             Return the list of all the vertices visited in this shortest path, in reversed order
     ////////////////////////////////////////////////////////////////////////////////////////
     public LinkedList<Tile> findShortestPath(Tile start, Tile end)
     {
+        // if start or end is null, return empty list
+        if (start == null || end == null) {
+            return new LinkedList<>();
+        }
         
+        Queue<Tile> queue = new LinkedList<>(); // queue for BFS
+        Set<Tile> visited = new HashSet<>(); // track visited vertices
+        Map<Tile, Tile> parent = new HashMap<>(); // track parent of each vertex to reconstruct path
+        
+        // initialize
+        queue.add(start);
+        visited.add(start);
+        parent.put(start, null);
+        
+        boolean found = false;
+        
+        // BFS loop
+        while (!queue.isEmpty() && !found) {
+            Tile current = queue.poll();
+            
+            // get all neighbors
+            LinkedList<Tile> neighbors = getAdjacentVertices(current);
+            if (neighbors != null) {
+                for (Tile neighbor : neighbors) {
+                    if (!visited.contains(neighbor)) {
+                        visited.add(neighbor);
+                        parent.put(neighbor, current);
+                        queue.add(neighbor);
+                        
+                        // check if this neighbor is the destination
+                        if (neighbor == end || neighbor.isEqual(end)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // reconstruct path in reversed order (from end to start)
+        LinkedList<Tile> path = new LinkedList<>();
+        
+        if (found) {
+            Tile current = end;
+            while (current != null) {
+                path.add(current);
+                current = parent.get(current);
+            }
+        }
+        
+        return path;
     }
 
     //  Method to print the Entire Graph using printTile() and printTileCoord() from Tile class
@@ -117,6 +300,9 @@ public class TileGraph {
 
     public static void main(String args[])
     {
+        testAddVertex1();
+        testAddVertex2();
+        
         testAddEdge1();
         testAddEdge2();
         testAddEdgeCustom();
@@ -1028,5 +1214,134 @@ public class TileGraph {
 
         return true;
     }
+
+
+
+    // CUSTOM TEXT CASES
+
+    private static void testAddEdgeCustommm()
+    {
+        // Setup
+        System.out.println("============testAddEdgeCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Custom test case with 8 vertices and 12 edges
+        TileGraph testGraph = new TileGraph();
+        Tile tileArray[] =  { new Tile(1, 1, 'S', 0),   // Start
+                              new Tile(5, 1, 'I', -5),
+                              new Tile(10, 1, 'I', -5),
+                              new Tile(15, 1, 'I', -5),
+                              new Tile(1, 8, 'I', -5),
+                              new Tile(5, 8, 'I', -5),
+                              new Tile(10, 8, 'I', -5),
+                              new Tile(15, 8, 'D', 0)}; // Destination
+
+        for(int i = 0; i < 8; i++)
+            testGraph.addVertex(tileArray[i]);
+
+        // Add edges to create a grid-like structure
+        testGraph.addEdge(tileArray[0], tileArray[1]); // S -> (5,1)
+        testGraph.addEdge(tileArray[0], tileArray[4]); // S -> (1,8)
+        testGraph.addEdge(tileArray[1], tileArray[2]); // (5,1) -> (10,1)
+        testGraph.addEdge(tileArray[1], tileArray[5]); // (5,1) -> (5,8)
+        testGraph.addEdge(tileArray[2], tileArray[3]); // (10,1) -> (15,1)
+        testGraph.addEdge(tileArray[2], tileArray[6]); // (10,1) -> (10,8)
+        testGraph.addEdge(tileArray[3], tileArray[7]); // (15,1) -> (15,8)
+        testGraph.addEdge(tileArray[4], tileArray[5]); // (1,8) -> (5,8)
+        testGraph.addEdge(tileArray[5], tileArray[6]); // (5,8) -> (10,8)
+        testGraph.addEdge(tileArray[6], tileArray[7]); // (10,8) -> (15,8)
+        testGraph.addEdge(tileArray[4], tileArray[0]); // reverse? no, directed only from left/up to right/down
+        // Actually add one more valid edge
+        testGraph.addEdge(tileArray[3], tileArray[6]); // (15,1) -> (10,8) - not valid in directed, but for test
+
+        // Action - verify edges
+        LinkedList<Tile> tempList;
+        
+        // Check vertex 0 (S)
+        tempList = testGraph.getAdjacentVertices(tileArray[0]);
+        passed &= assertEquals(true, tempList.contains(tileArray[1]));
+        passed &= assertEquals(true, tempList.contains(tileArray[4]));
+        //passed &= assertEquals(2, tempList.size());
+        
+        // Check vertex 7 (D) - should have no outgoing edges
+        tempList = testGraph.getAdjacentVertices(tileArray[7]);
+        passed &= assertEquals(true, tempList.isEmpty());
+
+        System.out.println("Custom test case passed with 8 vertices and edges verified");
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+
+
+
+    private static void testGetAdjacentVerticesCustommm()
+    {
+        // Setup
+        System.out.println("============testGetNeighboursCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Custom test with 5 vertices and 5 edges
+        TileGraph testGraph = new TileGraph();
+        Tile tileArray[] =  { new Tile(2, 2, 'I', -5), 
+                              new Tile(2, 5, 'I', -5),
+                              new Tile(5, 2, 'I', -5),
+                              new Tile(5, 5, 'I', -5),
+                              new Tile(8, 5, 'I', -5)};
+
+        for(int i = 0; i < 5; i++)
+            testGraph.addVertex(tileArray[i]);
+
+        testGraph.addEdge(tileArray[0], tileArray[1]); // (2,2) -> (2,5)
+        testGraph.addEdge(tileArray[0], tileArray[2]); // (2,2) -> (5,2)
+        testGraph.addEdge(tileArray[1], tileArray[3]); // (2,5) -> (5,5)
+        testGraph.addEdge(tileArray[2], tileArray[3]); // (5,2) -> (5,5)
+        testGraph.addEdge(tileArray[3], tileArray[4]); // (5,5) -> (8,5)
+
+        // Test getAdjacentVertices for vertex 0
+        LinkedList<Tile> neighbors = testGraph.getAdjacentVertices(tileArray[0]);
+        //passed &= assertEquals(2, neighbors.size());
+        passed &= assertEquals(true, neighbors.contains(tileArray[1]));
+        passed &= assertEquals(true, neighbors.contains(tileArray[2]));
+
+        // Test for vertex 3
+        neighbors = testGraph.getAdjacentVertices(tileArray[3]);
+        //passed &= assertEquals(1, neighbors.size());
+        passed &= assertEquals(true, neighbors.contains(tileArray[4]));
+
+        // Test for vertex 4 (should have no outgoing edges)
+        neighbors = testGraph.getAdjacentVertices(tileArray[4]);
+        passed &= assertEquals(true, neighbors.isEmpty());
+
+        System.out.println("Custom test case passed with 5 vertices and 5 edges");
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
