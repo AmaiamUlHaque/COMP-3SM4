@@ -103,40 +103,40 @@ public class TileGraph {
         while (!queue.isEmpty() && !found) {
             Tile current = queue.poll();
 
-            LinkedList <WeightedEdge> neighbors =adjList.get(current);
-            if (neighbors != null) {
+            LinkedList <WeightedEdge> neighbours =adjList.get(current);
+            if (neighbours != null) {
                 // process order: right then down
-                List<Tile> rightNeighbors = new ArrayList<>();
-                List<Tile> downNeighbors = new ArrayList<>();
+                List<Tile> rightNeighbours = new ArrayList<>();
+                List<Tile> downNeighbours = new ArrayList<>();
 
-                for (WeightedEdge edge : neighbors) {
-                    Tile neighbor = edge.getTile();
-                    if (neighbor.getX() > current.getX()) {
-                        rightNeighbors.add(neighbor);
+                for (WeightedEdge edge : neighbours) {
+                    Tile neighbour = edge.getTile();
+                    if (neighbour.getX() > current.getX()) {
+                        rightNeighbours.add(neighbour);
                     }
-                    else if (neighbor.getY() > current.getY()) {
-                        downNeighbors.add(neighbor);
+                    else if (neighbour.getY() > current.getY()) {
+                        downNeighbours.add(neighbour);
                     }
                 }
 
-                Collections.sort(rightNeighbors, (t1, t2) -> Integer.compare(t1.getX(), t2.getX()));
-                Collections.sort(downNeighbors, (t1, t2) -> Integer.compare(t1.getY(), t2.getY()));
+                Collections.sort(rightNeighbours, (t1, t2) -> Integer.compare(t1.getX(), t2.getX()));
+                Collections.sort(downNeighbours, (t1, t2) -> Integer.compare(t1.getY(), t2.getY()));
 
-                List<Tile> orderedNeighbors = new ArrayList<>();
-                orderedNeighbors.addAll(rightNeighbors);
-                orderedNeighbors.addAll(downNeighbors);
+                List<Tile> orderedNeighbours = new ArrayList<>();
+                orderedNeighbours.addAll(rightNeighbours);
+                orderedNeighbours.addAll(downNeighbours);
 
-                for (Tile neighbor : orderedNeighbors) {
-                    if (!visited.contains(neighbor)) {
-                        visited.add(neighbor);
-                        parent.put(neighbor, current);
+                for (Tile neighbour : orderedNeighbours) {
+                    if (!visited.contains(neighbour)) {
+                        visited.add(neighbour);
+                        parent.put(neighbour, current);
 
-                        if (neighbor.isEqual(end)) {
+                        if (neighbour.isEqual(end)) {
                             found = true;
                             break;
                         }
                         
-                        queue.add(neighbor);
+                        queue.add(neighbour);
 
                     }
                 }
@@ -165,13 +165,14 @@ public class TileGraph {
             return shortestPath;
         }
 
-        //distance map
+        //maps
         Map<Tile, Integer> dist = new HashMap<>();
         Map<Tile, Tile> prev = new HashMap<>();
         Set<Tile> settled = new HashSet<>();
 
         // priority Q of (dist, tile)
-        PriorityQueue<Map.Entry<Integer, Tile>> pq = new PriorityQueue<>((a,b) -> Integer.compare(a.getKey(), b.getKey()));
+        // gives the tile with smallest distance when poll() invoked
+        PriorityQueue<DistTile> pq = new PriorityQueue<>((a, b) -> Integer.compare(a.distance, b.distance));
 
         //initialise distances to inf and source to 0
         for (Tile vertex : adjList.keySet()) {
@@ -179,12 +180,12 @@ public class TileGraph {
         }
         dist.put(start, 0);
 
-        pq.add(new AbstractMap.SimpleEntry<>(0, start));
+        pq.add(new DistTile(0, start));
 
         while (!pq.isEmpty()) {
-            Map.Entry<Integer, Tile> entry = pq.poll(); //retrieves and removes head
-            Tile current = entry.getValue();
-            int currentDist = entry.getKey();
+            DistTile currentEntry = pq.poll(); //retrieves and removes head
+            Tile current = currentEntry.tile;
+            int currentDist = currentEntry.distance;
 
             //if reach end, break
             if (current.isEqual(end)) {
@@ -197,11 +198,11 @@ public class TileGraph {
             }
             settled.add(current);
 
-            //check neighbors
-            LinkedList<WeightedEdge> neighbors = adjList.get(current);
-            if (neighbors != null) {
-                for (WeightedEdge edge : neighbors) {
-                    Tile neighbor = edge.getTile();
+            //check neighbours
+            LinkedList<WeightedEdge> neighbours = adjList.get(current);
+            if (neighbours != null) {
+                for (WeightedEdge edge : neighbours) {
+                    Tile neighbour = edge.getTile();
                     int weight = edge.getPenalty();
 
                     //only if weight is non-negative --> djikstras req
@@ -210,13 +211,13 @@ public class TileGraph {
                     }
 
                     //not visited yet
-                    if (!settled.contains(neighbor)) {
+                    if (!settled.contains(neighbour)) {
                         int newDist = currentDist + weight;
                         //if better path, relax it
-                        if (newDist < dist.get(neighbor)) {
-                            dist.put(neighbor, newDist);
-                            prev.put(neighbor,current);
-                            pq.add(new AbstractMap.SimpleEntry<>(newDist, neighbor));
+                        if (newDist < dist.get(neighbour)) {
+                            dist.put(neighbour, newDist);
+                            prev.put(neighbour,current);
+                            pq.add(new DistTile(newDist, neighbour));
                         }
                     }
 
@@ -238,6 +239,17 @@ public class TileGraph {
 
     }
 
+    // helper class for dijkstra's
+    private static class DistTile {
+        int distance;
+        Tile tile;
+        
+        DistTile(int d, Tile t) {
+            distance = d;
+            tile = t;
+        }
+    }
+    
     // Bellman-Ford Lowest Penalty Path - returns null if negative weight cycles are detected
     private LinkedList<Tile> BellmanShortestPath(Tile start, Tile end)
     {
@@ -320,11 +332,20 @@ public class TileGraph {
                 return null;
             }
         }
+
+        // path : end --> start
+        if (prev.containsKey(end) || start.isEqual(end)) {
+            Tile current = end;
+            while (current != null) {
+                shortestPath.add(current);
+                current = prev.get(current);
+            }
+        }
         
         return shortestPath;
     }
 
-    // Helper class for bellmanford edges
+    // helper class for bellmanford edges
     private static class WeightedEdgeList {
         Tile src;
         Tile dst;
@@ -375,9 +396,9 @@ public class TileGraph {
             }
 
             if (dist.get(u) != Integer.MAX_VALUE) {
-                LinkedList<WeightedEdge> neighbors = adjList.get(u);
-                if (neighbors != null) {
-                    for (WeightedEdge edge : neighbors) {
+                LinkedList<WeightedEdge> neighbours = adjList.get(u);
+                if (neighbours != null) {
+                    for (WeightedEdge edge : neighbours) {
                         Tile v = edge.getTile();
                         int weight = edge.getPenalty();
 
@@ -434,9 +455,9 @@ public class TileGraph {
             Tile u = queue.poll();
             sortedList.add(u);
 
-            LinkedList<WeightedEdge> neighbors = adjList.get(u);
-            if (neighbors != null) {
-                for (WeightedEdge edge : neighbors) {
+            LinkedList<WeightedEdge> neighbours = adjList.get(u);
+            if (neighbours != null) {
+                for (WeightedEdge edge : neighbours) {
                     Tile v = edge.getTile();
                     inDegree.put(v, inDegree.get(v) - 1);
                     if (inDegree.get(v) == 0) {
@@ -495,10 +516,126 @@ public class TileGraph {
     private void buildGraph(TileMap mapRef)
     {
         // HIDDEN - Completed in Lab 3
-
         // You must upgrade your lab 4 code so that the following weights are scanned into the edge of the graph
         // Score Penalty ('x') gives a weight of +5
         // Score Reward ('$') gives a weight of -2
+
+        Tile[][] map = mapRef.getMapRef();
+
+        //find start tile S @[1][1] and add as v
+        Tile startTile = mapRef.getStartTile();
+        addVertex(startTile);
+
+        // bfs w/ Q
+        Queue<Tile> queue = new LinkedList<>();
+        Set<Tile> visited = new HashSet<>();
+
+        queue.add(startTile);
+        visited.add(startTile);
+
+        while (!queue.isEmpty()) {
+            Tile current = queue.poll();
+            int x = current.getX();
+            int y = current.getY();
+
+            // find intersection neighbour on the right and calc weight
+            WeightedEdgeResult rightResult = findNextIntersectionWithWeight(map, x, y, true);
+            if (rightResult != null) {
+                Tile rightNeighbour = rightResult.tile;
+                int weight = rightResult.weight;
+
+                addVertex(rightNeighbour);
+                addEdge(current, rightNeighbour, weight);
+
+                if (!visited.contains(rightNeighbour)) {
+                    visited.add(rightNeighbour);
+                    queue.add(rightNeighbour);
+                }
+            }
+
+            // find intersection neighbour downwards and calc weight
+            WeightedEdgeResult downResult = findNextIntersectionWithWeight(map, x, y, false);
+            if (downResult != null) {
+                Tile downNeighbour = downResult.tile;
+                int weight = downResult.weight;
+
+                addVertex(downNeighbour);
+                addEdge(current, downNeighbour, weight);
+
+                if (!visited.contains(downNeighbour)) {
+                    visited.add(downNeighbour);
+                    queue.add(downNeighbour);
+                }
+            }
+        }
+    }
+
+    //helper class for returning both tile and weight
+    private static class WeightedEdgeResult {
+        Tile tile;
+        int weight;
+
+        WeightedEdgeResult(Tile t, int w) {
+            tile = t;
+            weight = w;
+        }
+    }
+
+    // helper method to find next intersection and calc cumulative weight
+    // directionrRight --> true = right & false = down
+    private WeightedEdgeResult findNextIntersectionWithWeight(Tile[][] map, int startX, int startY, boolean directionRight) {
+        int cumulativeWeight = 0;
+
+        if (directionRight) { // right
+
+            for (int x = startX + 1; x < TileMap.BOARDSIZEX - 1; x++) {
+                Tile tile = map[startY][x];
+                char type = tile.getTileType();
+
+                //add pickup weights
+                if (type == 'x') { //penalty
+                    cumulativeWeight += 5;
+                }
+                else if (type == '$') { //reward
+                    cumulativeWeight -= 2;
+                }
+
+                if (type == 'I' || type == 'D') {
+                    return new WeightedEdgeResult(tile, cumulativeWeight);
+                }
+                else if (type == '#') { //wall
+                    break;
+                }
+                //continue thru roads/spaces
+            }
+
+        }
+
+        else { //down
+            for (int y = startY + 1; y < TileMap.BOARDSIZEY - 1; y++) {
+                Tile tile = map[y][startX];
+                char type = tile.getTileType();
+
+                //add pickup weights
+                if (type == 'x') { //penalty
+                    cumulativeWeight += 5;
+                }
+                else if (type == '$') { //reward
+                    cumulativeWeight -= 2;
+                }
+
+                if (type == 'I' || type == 'D') {
+                    return new WeightedEdgeResult(tile, cumulativeWeight);
+                }
+                else if (type == '#') { //wall
+                    break;
+                }
+                //continue thru roads/spaces
+            }
+
+        }
+
+        return null;
     }
 
 
@@ -1005,30 +1142,7 @@ public class TileGraph {
         }
     }
     
-    private static void testAddWeightedEdgeCustom()
-    {
-        // Setup
-        System.out.println("============testAddWeightedEdgeCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your edge insertion with minimally 8
-        // vertices and 12 edges
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
+    // MOVED testAddWeightedEdgeCustom() TO BOTTOM
     
 
     // Topological Sort
@@ -1210,30 +1324,7 @@ public class TileGraph {
         }
     }
     
-    private static void testTopologicalSortCustom()
-    {
-        // Setup
-        System.out.println("============testTopologicalSortCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your edge insertion with minimally 8
-        // vertices and 12 edges
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
+    // MOVED testTopologicalSortCustom() TO BOTTOM
     
 
     // Shortest Path for Directed Acyclic Graph using Topological Sort
@@ -1375,30 +1466,8 @@ public class TileGraph {
         }
     }
     
-    private static void testShortestPathDAGCustom()
-    {
-        // Setup
-        System.out.println("============testShortestPathDAGCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your edge insertion with minimally 8
-        // vertices and 12 edges
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
+    // MOVED testShortestPathDAGCustom() TO BOTTOM
+    
     
 
     // Shortest Path using Dijkastra Algorithm on Positive-Weighted Directed Graph
@@ -1538,31 +1607,8 @@ public class TileGraph {
         }
     }
     
-    private static void testShortestPathDijkastraCustom()
-    {
-        // Setup
-        System.out.println("============testShortestPathDijkastraCustom=============");
-        boolean passed = true;
-        totalTestCount++;
+    // MOVED testShortestPathDijkastraCustom() TO BOTTOM
 
-        // Add your own custom test here
-        // Design another case to test your edge insertion with minimally 8
-        // vertices and 12 edges
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-    
 
     // Shortest Path using Bellman-Ford Algorithm on General-Weighted Graph
     // Shortest Path using Bellman-Ford Algorithm on General-Weighted Graph
@@ -1820,31 +1866,7 @@ public class TileGraph {
         }
     }
     
-    private static void testShortestPathBellmanFordCustom()
-    {
-        // Setup
-        System.out.println("============testShortestPathBellmanFordCustom=============");
-        boolean passed = true;
-        totalTestCount++;
-
-        // Add your own custom test here
-        // Design another case to test your edge insertion with minimally 8
-        // vertices and 12 edges
-
-        // WARNING!! remove these lines when adding test case here
-        System.out.println("Did you add the Custom Test Case?");
-        passed &= false;
-        // WARNING!! remove these lines when adding test case here
-
-        // Tear Down
-        totalPassed &= passed;
-        if(passed) 
-        {
-            System.out.println("\tPassed");
-            totalPassCount++;            
-        }
-    }
-    
+    // MOVED testShortestPathBellmanFordCustom() TO BOTTOM
 
     
 
@@ -1893,4 +1915,431 @@ public class TileGraph {
 
         return true;
     }
+
+
+
+
+
+    // CUSTOM TEST CASES
+
+    private static void testAddWeightedEdgeCustom()
+    {
+        // Setup
+        System.out.println("============testAddWeightedEdgeCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Custom test case with 8 vertices and 12 edges
+        TileGraph testGraph = new TileGraph();
+        Tile tileArray[] = { 
+            new Tile(0, 0, 'I', -5),   // A
+            new Tile(3, 0, 'I', -5),   // B
+            new Tile(6, 0, 'I', -5),   // C
+            new Tile(0, 3, 'I', -5),   // D
+            new Tile(3, 3, 'I', -5),   // E
+            new Tile(6, 3, 'I', -5),   // F
+            new Tile(0, 6, 'I', -5),   // G
+            new Tile(3, 6, 'I', -5)    // H
+        };
+
+        // Add all vertices
+        for(int i = 0; i < 8; i++) {
+            testGraph.addVertex(tileArray[i]);
+        }
+
+        // Add edges with various weights
+        testGraph.addEdge(tileArray[0], tileArray[1], 5);  // A->B weight 5
+        testGraph.addEdge(tileArray[0], tileArray[3], 3);  // A->D weight 3
+        testGraph.addEdge(tileArray[1], tileArray[2], 2);  // B->C weight 2
+        testGraph.addEdge(tileArray[1], tileArray[4], 7);  // B->E weight 7
+        testGraph.addEdge(tileArray[2], tileArray[5], 4);  // C->F weight 4
+        testGraph.addEdge(tileArray[3], tileArray[4], 1);  // D->E weight 1
+        testGraph.addEdge(tileArray[3], tileArray[6], 6);  // D->G weight 6
+        testGraph.addEdge(tileArray[4], tileArray[5], 3);  // E->F weight 3
+        testGraph.addEdge(tileArray[4], tileArray[7], 8);  // E->H weight 8
+        testGraph.addEdge(tileArray[5], tileArray[7], 2);  // F->H weight 2
+        testGraph.addEdge(tileArray[6], tileArray[7], 4);  // G->H weight 4
+        testGraph.addEdge(tileArray[2], tileArray[7], 10); // C->H weight 10 (direct)
+
+        // Verify edges
+        LinkedList<WeightedEdge> edges;
+        
+        // Check A's edges (should have 2: B and D)
+        edges = testGraph.adjList.get(tileArray[0]);
+        passed &= assertEquals(2, edges.size());
+        
+        // Check B's edges (should have 2: C and E)
+        edges = testGraph.adjList.get(tileArray[1]);
+        passed &= assertEquals(2, edges.size());
+        
+        // Check C's edges (should have 2: F and H)
+        edges = testGraph.adjList.get(tileArray[2]);
+        passed &= assertEquals(2, edges.size());
+        
+        // Check D's edges (should have 2: E and G)
+        edges = testGraph.adjList.get(tileArray[3]);
+        passed &= assertEquals(2, edges.size());
+        
+        // Check E's edges (should have 2: F and H)
+        edges = testGraph.adjList.get(tileArray[4]);
+        passed &= assertEquals(2, edges.size());
+        
+        // Check F's edges (should have 1: H)
+        edges = testGraph.adjList.get(tileArray[5]);
+        passed &= assertEquals(1, edges.size());
+        
+        // Check G's edges (should have 1: H)
+        edges = testGraph.adjList.get(tileArray[6]);
+        passed &= assertEquals(1, edges.size());
+        
+        // Check H's edges (should have 0)
+        edges = testGraph.adjList.get(tileArray[7]);
+        passed &= assertEquals(0, edges.size());
+
+        // Verify specific edge weights
+        edges = testGraph.adjList.get(tileArray[0]);
+        for (WeightedEdge e : edges) {
+            if (e.getTile().isEqual(tileArray[1])) {
+                passed &= assertEquals(5, e.getPenalty());
+            }
+            if (e.getTile().isEqual(tileArray[3])) {
+                passed &= assertEquals(3, e.getPenalty());
+            }
+        }
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+    
+
+
+
+    
+    private static void testTopologicalSortCustom()
+    {
+        // Setup
+        System.out.println("============testTopologicalSortCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Custom test case with 7 vertices in a linear chain and branching
+        TileGraph testGraph = new TileGraph();
+        Tile tileArray[] = { 
+            new Tile(0, 0, 'I', -5),   // A - start
+            new Tile(3, 0, 'I', -5),   // B
+            new Tile(6, 0, 'I', -5),   // C
+            new Tile(0, 3, 'I', -5),   // D
+            new Tile(3, 3, 'I', -5),   // E
+            new Tile(6, 3, 'I', -5),   // F
+            new Tile(3, 6, 'I', -5)    // G - end
+        };
+
+        // Add all vertices
+        for(int i = 0; i < 7; i++) {
+            testGraph.addVertex(tileArray[i]);
+        }
+
+        // Add edges - DAG structure
+        testGraph.addEdge(tileArray[0], tileArray[1], 1);  // A->B
+        testGraph.addEdge(tileArray[0], tileArray[3], 2);  // A->D
+        testGraph.addEdge(tileArray[1], tileArray[2], 3);  // B->C
+        testGraph.addEdge(tileArray[1], tileArray[4], 4);  // B->E
+        testGraph.addEdge(tileArray[2], tileArray[5], 5);  // C->F
+        testGraph.addEdge(tileArray[3], tileArray[4], 6);  // D->E
+        testGraph.addEdge(tileArray[4], tileArray[5], 7);  // E->F
+        testGraph.addEdge(tileArray[4], tileArray[6], 8);  // E->G
+        testGraph.addEdge(tileArray[5], tileArray[6], 9);  // F->G
+
+        // Action - Perform topological sort
+        LinkedList<Tile> sorted = testGraph.topologicalSort();
+
+        // Verify topological sort properties
+        if (sorted != null && sorted.size() == 7) {
+            // Create index map
+            int[] indexMap = new int[7];
+            for (int i = 0; i < sorted.size(); i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (sorted.get(i).isEqual(tileArray[j])) {
+                        indexMap[j] = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Check dependencies: A must come before B, D
+            passed &= indexMap[0] < indexMap[1];  // A before B
+            passed &= indexMap[0] < indexMap[3];  // A before D
+            
+            // B must come before C, E
+            passed &= indexMap[1] < indexMap[2];  // B before C
+            passed &= indexMap[1] < indexMap[4];  // B before E
+            
+            // C must come before F
+            passed &= indexMap[2] < indexMap[5];  // C before F
+            
+            // D must come before E
+            passed &= indexMap[3] < indexMap[4];  // D before E
+            
+            // E must come before F, G
+            passed &= indexMap[4] < indexMap[5];  // E before F
+            passed &= indexMap[4] < indexMap[6];  // E before G
+            
+            // F must come before G
+            passed &= indexMap[5] < indexMap[6];  // F before G
+            
+            // First element should be A
+            passed &= sorted.getFirst().isEqual(tileArray[0]);
+            
+            // Last element should be G
+            passed &= sorted.getLast().isEqual(tileArray[6]);
+        } else {
+            passed = false;
+        }
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+    
+
+    
+    
+    private static void testShortestPathDAGCustom()
+    {
+        // Setup
+        System.out.println("============testShortestPathDAGCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Custom test case - DAG with 6 vertices
+        TileGraph testGraph = new TileGraph();
+        Tile tileArray[] = { 
+            new Tile(0, 0, 'I', -5),   // A (start)
+            new Tile(3, 0, 'I', -5),   // B
+            new Tile(6, 0, 'I', -5),   // C
+            new Tile(0, 3, 'I', -5),   // D
+            new Tile(3, 3, 'I', -5),   // E
+            new Tile(6, 3, 'I', -5)    // F (end)
+        };
+
+        // Add vertices
+        for(int i = 0; i < 6; i++) {
+            testGraph.addVertex(tileArray[i]);
+        }
+
+        // Add edges with weights
+        testGraph.addEdge(tileArray[0], tileArray[1], 5);  // A->B weight 5
+        testGraph.addEdge(tileArray[0], tileArray[3], 3);  // A->D weight 3
+        testGraph.addEdge(tileArray[1], tileArray[2], 2);  // B->C weight 2
+        testGraph.addEdge(tileArray[1], tileArray[4], 4);  // B->E weight 4
+        testGraph.addEdge(tileArray[2], tileArray[5], 1);  // C->F weight 1
+        testGraph.addEdge(tileArray[3], tileArray[4], 2);  // D->E weight 2
+        testGraph.addEdge(tileArray[4], tileArray[5], 3);  // E->F weight 3
+
+        // Action - Find shortest path from A to F
+        LinkedList<Tile> path = testGraph.DAGShortestPath(tileArray[0], tileArray[5]);
+        
+        // Expected shortest path: A->B->C->F with total weight 5+2+1=8
+        // Alternative A->D->E->F: 3+2+3=8 (equal)
+        // Alternative A->B->E->F: 5+4+3=12 (worse)
+        
+        if (path != null && path.size() >= 2) {
+            // Path should end with A (start)
+            passed &= path.getLast().isEqual(tileArray[0]);
+            // Path should start with F (end)
+            passed &= path.getFirst().isEqual(tileArray[5]);
+            
+            // Verify path is valid (contains only valid edges)
+            for (int i = 0; i < path.size() - 1; i++) {
+                Tile from = path.get(i + 1);
+                Tile to = path.get(i);
+                // Check if edge exists (simplified check)
+                LinkedList<WeightedEdge> edges = testGraph.adjList.get(from);
+                boolean edgeFound = false;
+                if (edges != null) {
+                    for (WeightedEdge e : edges) {
+                        if (e.getTile().isEqual(to)) {
+                            edgeFound = true;
+                            break;
+                        }
+                    }
+                }
+                passed &= edgeFound;
+            }
+        } else {
+            passed = false;
+        }
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+    
+
+    
+    
+    private static void testShortestPathDijkastraCustom()
+    {
+        // Setup
+        System.out.println("============testShortestPathDijkastraCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Custom test case for Dijkstra with positive weights only
+        TileGraph testGraph = new TileGraph();
+        Tile tileArray[] = { 
+            new Tile(0, 0, 'I', -5),   // A (start)
+            new Tile(3, 0, 'I', -5),   // B
+            new Tile(6, 0, 'I', -5),   // C
+            new Tile(0, 3, 'I', -5),   // D
+            new Tile(3, 3, 'I', -5),   // E
+            new Tile(6, 3, 'I', -5),   // F
+            new Tile(0, 6, 'I', -5),   // G
+            new Tile(3, 6, 'I', -5),   // H
+            new Tile(6, 6, 'I', -5)    // I (end)
+        };
+
+        // Add all vertices
+        for(int i = 0; i < 9; i++) {
+            testGraph.addVertex(tileArray[i]);
+        }
+
+        // Add edges with positive weights
+        testGraph.addEdge(tileArray[0], tileArray[1], 2);  // A->B
+        testGraph.addEdge(tileArray[0], tileArray[3], 4);  // A->D
+        testGraph.addEdge(tileArray[1], tileArray[2], 1);  // B->C
+        testGraph.addEdge(tileArray[1], tileArray[4], 3);  // B->E
+        testGraph.addEdge(tileArray[2], tileArray[5], 2);  // C->F
+        testGraph.addEdge(tileArray[3], tileArray[4], 1);  // D->E
+        testGraph.addEdge(tileArray[3], tileArray[6], 5);  // D->G
+        testGraph.addEdge(tileArray[4], tileArray[5], 2);  // E->F
+        testGraph.addEdge(tileArray[4], tileArray[7], 4);  // E->H
+        testGraph.addEdge(tileArray[5], tileArray[8], 3);  // F->I
+        testGraph.addEdge(tileArray[6], tileArray[7], 1);  // G->H
+        testGraph.addEdge(tileArray[7], tileArray[8], 2);  // H->I
+
+        // Action - Find shortest path from A to I
+        LinkedList<Tile> path = testGraph.DijkstraShortestPath(tileArray[0], tileArray[8]);
+        
+        // Expected shortest path: A->B->E->H->I? Let's calculate:
+        // A->B (2) + B->E (3) + E->H (4) + H->I (2) = 11
+        // A->D (4) + D->E (1) + E->H (4) + H->I (2) = 11
+        // A->B (2) + B->C (1) + C->F (2) + F->I (3) = 8 (SHORTEST!)
+        
+        if (path != null && path.size() >= 2) {
+            // Path should end with start
+            passed &= path.getLast().isEqual(tileArray[0]);
+            // Path should start with end
+            passed &= path.getFirst().isEqual(tileArray[8]);
+            
+            // The shortest path should have total weight 8
+            // We can verify by checking that the path contains C and F
+            boolean hasC = false;
+            boolean hasF = false;
+            for (Tile t : path) {
+                if (t.isEqual(tileArray[2])) hasC = true;
+                if (t.isEqual(tileArray[5])) hasF = true;
+            }
+            // The optimal path should include C and F
+            passed &= (hasC && hasF);
+        } else {
+            passed = false;
+        }
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+    
+
+    
+    
+    private static void testShortestPathBellmanFordCustom()
+    {
+        // Setup
+        System.out.println("============testShortestPathBellmanFordCustom=============");
+        boolean passed = true;
+        totalTestCount++;
+
+        // Custom test case with negative weights (rewards) but no negative cycles
+        TileGraph testGraph = new TileGraph();
+        Tile tileArray[] = { 
+            new Tile(0, 0, 'I', -5),   // A (start)
+            new Tile(3, 0, 'I', -5),   // B
+            new Tile(6, 0, 'I', -5),   // C
+            new Tile(0, 3, 'I', -5),   // D
+            new Tile(3, 3, 'I', -5),   // E
+            new Tile(6, 3, 'I', -5)    // F (end)
+        };
+
+        // Add all vertices
+        for(int i = 0; i < 6; i++) {
+            testGraph.addVertex(tileArray[i]);
+        }
+
+        // Add edges with both positive and negative weights (rewards)
+        testGraph.addEdge(tileArray[0], tileArray[1], 3);   // A->B weight 3
+        testGraph.addEdge(tileArray[0], tileArray[3], 5);   // A->D weight 5
+        testGraph.addEdge(tileArray[1], tileArray[2], 2);   // B->C weight 2
+        testGraph.addEdge(tileArray[1], tileArray[4], -2);  // B->E weight -2 (reward!)
+        testGraph.addEdge(tileArray[2], tileArray[5], 4);   // C->F weight 4
+        testGraph.addEdge(tileArray[3], tileArray[4], 1);   // D->E weight 1
+        testGraph.addEdge(tileArray[4], tileArray[5], -1);  // E->F weight -1 (reward!)
+        testGraph.addEdge(tileArray[1], tileArray[5], 6);   // B->F direct weight 6
+
+        // Action - Find shortest path from A to F
+        LinkedList<Tile> path = testGraph.BellmanShortestPath(tileArray[0], tileArray[5]);
+        
+        // Expected shortest path: A->B->E->F with total weight: 3 + (-2) + (-1) = 0
+        // Alternative A->B->C->F: 3+2+4=9 (worse)
+        // Alternative A->D->E->F: 5+1+(-1)=5 (worse)
+        // Alternative A->B->F: 3+6=9 (worse)
+        
+        if (path != null && path.size() >= 2) {
+            // Path should end with start
+            passed &= path.getLast().isEqual(tileArray[0]);
+            // Path should start with end
+            passed &= path.getFirst().isEqual(tileArray[5]);
+            
+            // Verify the path contains B, E (the optimal path)
+            boolean hasB = false;
+            boolean hasE = false;
+            for (Tile t : path) {
+                if (t.isEqual(tileArray[1])) hasB = true;
+                if (t.isEqual(tileArray[4])) hasE = true;
+            }
+            passed &= (hasB && hasE);
+        } else {
+            passed = false;
+        }
+
+        // Tear Down
+        totalPassed &= passed;
+        if(passed) 
+        {
+            System.out.println("\tPassed");
+            totalPassCount++;            
+        }
+    }
+    
+
+
+
 }
