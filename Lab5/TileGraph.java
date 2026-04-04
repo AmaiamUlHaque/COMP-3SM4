@@ -403,9 +403,54 @@ public class TileGraph {
     }
     
     // Kahn's Topological Sorting
-    private LinkedList<Tile> topologicalSort()  // helper method for DAG Shortest Path
+    private LinkedList<Tile> topologicalSort()
     {
         LinkedList<Tile> sortedList = new LinkedList<Tile>();
+
+        // in degree of each vertex and init all to 0
+        Map<Tile, Integer> inDegree = new HashMap<>();
+        for (Tile vertex : adjList.keySet()) {
+            inDegree.put(vertex, 0);
+        }
+
+        // compute all indegrees
+        for (LinkedList<WeightedEdge> edges : adjList.values()) {
+            for (WeightedEdge edge : edges) {
+                Tile dst = edge.getTile();
+                inDegree.put(dst, inDegree.get(dst) + 1);
+            }
+        }
+
+        // Q for v's w/ indegree = 0
+        Queue<Tile> queue = new LinkedList<>();
+        for (Map.Entry<Tile, Integer> entry : inDegree.entrySet()) {
+            if (entry.getValue() == 0) {
+                queue.add(entry.getKey());
+            }
+        }
+
+        //process Q
+        while (!queue.isEmpty()) {
+            Tile u = queue.poll();
+            sortedList.add(u);
+
+            LinkedList<WeightedEdge> neighbors = adjList.get(u);
+            if (neighbors != null) {
+                for (WeightedEdge edge : neighbors) {
+                    Tile v = edge.getTile();
+                    inDegree.put(v, inDegree.get(v) - 1);
+                    if (inDegree.get(v) == 0) {
+                        queue.add(v);
+                    }
+                }
+            }
+        }
+
+        //if not all v's processed, check for cycles
+        if (sortedList.size() != adjList.size()) {
+            return new LinkedList<Tile>();
+        }
+
 
         return sortedList;
     }
@@ -416,16 +461,16 @@ public class TileGraph {
         {
             default:
             case 0:
-                return UnweightedShortestPath(start, end);  // Lab 4
+                return UnweightedShortestPath(start, end);  // Lab 4 --> plain
              
             case 1:
-                return DAGShortestPath(start, end);    // DAG
+                return DAGShortestPath(start, end);    // DAG --> penalty only
                 
             case 2:
-                return DijkstraShortestPath(start, end);    // Dijkstra
+                return DijkstraShortestPath(start, end);    // Dijkstra --> penalty only
 
             case 3:
-                return BellmanShortestPath(start, end);    // Bellman
+                return BellmanShortestPath(start, end);    // Bellman --> penalty + reward
         }
     }
 
