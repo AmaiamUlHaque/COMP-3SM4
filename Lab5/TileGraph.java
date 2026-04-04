@@ -53,7 +53,23 @@ public class TileGraph {
     {   
         // Implement the weighted edge insertion method. 
 
-        // Copy from Lab 4 and Modify here!
+        // check if src exists
+        if (!adjList.containsKey(src)){
+            return;
+        }
+    
+        LinkedList <WeightedEdge> edgeList = adjList.get(src);
+        WeightedEdge newEdge = new WeightedEdge(dst, penalty);
+
+        //check if edge already exists
+        for(WeightedEdge edge : edgeList){
+            if (edge.hasTile(dst)){
+                return; //edge exists, dont add
+            }
+        }
+
+        //add new edge to end of list
+        edgeList.addLast(newEdge);
         
     }
 
@@ -63,8 +79,79 @@ public class TileGraph {
         LinkedList<Tile> path = new LinkedList<Tile>();  // front end to start
 
         // HIDDEN - Completed in Lab 4 as findShortestPath()
-
         // You must copy and modify your code from lab 3 to make Game Mode 0 functional.
+
+        LinkedList<Tile> path = new LinkedList<Tile>();
+
+        if (start == null || end == null){
+            return path;
+        }
+
+        if (start.isEqual(end)){
+            path.add(start);
+            return path;
+        }
+
+        Queue<Tile> queue = new LinkedList<>();
+        Set<Tile> visited = new HashSet<>();
+        Map<Tile, Tile> parent = new HashMap<>();
+
+        queue.add(start);
+        visited.add(start);
+        parent.put(start, null);
+
+        boolean found = false;
+
+        while (!queue.isEmpty() && !found){
+            Tile current = queue.poll();
+
+            LinkedList <WeightedEdge> neighbors =adjList.get(current);
+            if (neighbors != null){
+                // process order: right then down
+                List<Tile> rightNeighbors = new ArrayList<>();
+                List<Tile> downNeighbors = new ArrayList<>();
+
+                for (WeightedEdge edge : neighbors) {
+                    Tile neighbor = edge.getTile();
+                    if (neighbor.getX() > current.getX()){
+                        rightNeighbors.add(neighbor);
+                    }
+                    else if (neighbor.getY() > current.getY()){
+                        downNeighbors.add(neighbor);
+                    }
+                }
+
+                Collections.sort(rightNeighbors, (t1, t2) -> Integer.compare(t1.getX(), t2.getX()));
+                Collections.sort(downNeighbors, (t1, t2) -> Integer.compare(t1.getY(), t2.getY()));
+
+                List<Tile> orderedNeighbors = new ArrayList<>();
+                orderedNeighbors.addAll(rightNeighbors);
+                orderedNeighbors.addAll(downNeighbors);
+
+                for (Tile neighbor : orderedNeighbors){
+                    if (!visited.contains(neighbor)) {
+                        visited.add(neighbor);
+                        parent.put(neighbor, current);
+
+                        if (neighbor.isEqual(end)){
+                            found = true;
+                            break;
+                        }
+                        
+                        queue.add(neighbor);
+
+                    }
+                }
+            }
+        }
+
+        if (found) {
+            Tile current = end;
+            while (current != null) {
+                path.add(current);
+                current = parent.get(current);
+            }
+        }
 
         return path;
     }
@@ -163,8 +250,8 @@ public class TileGraph {
         // HIDDEN - Completed in Lab 3
 
         // You must upgrade your lab 4 code so that the following weights are scanned into the edge of the graph
-        //  Score Penalty ('x') gives a weight of +5
-        //  Score Reward ('$') gives a weight of -2
+        // Score Penalty ('x') gives a weight of +5
+        // Score Reward ('$') gives a weight of -2
     }
 
 
