@@ -54,7 +54,7 @@ public class TileGraph {
         // Implement the weighted edge insertion method. 
 
         // check if src exists
-        if (!adjList.containsKey(src)){
+        if (!adjList.containsKey(src)) {
             return;
         }
     
@@ -62,8 +62,8 @@ public class TileGraph {
         WeightedEdge newEdge = new WeightedEdge(dst, penalty);
 
         //check if edge already exists
-        for(WeightedEdge edge : edgeList){
-            if (edge.hasTile(dst)){
+        for(WeightedEdge edge : edgeList) {
+            if (edge.hasTile(dst)) {
                 return; //edge exists, dont add
             }
         }
@@ -76,18 +76,16 @@ public class TileGraph {
     // returns the path with the smallest number of edges
     private LinkedList<Tile> UnweightedShortestPath(Tile start, Tile end)
     {
-        LinkedList<Tile> path = new LinkedList<Tile>();  // front end to start
-
         // HIDDEN - Completed in Lab 4 as findShortestPath()
         // You must copy and modify your code from lab 3 to make Game Mode 0 functional.
 
-        LinkedList<Tile> path = new LinkedList<Tile>();
+        LinkedList<Tile> path = new LinkedList<Tile>();  // front end to start
 
-        if (start == null || end == null){
+        if (start == null || end == null) {
             return path;
         }
 
-        if (start.isEqual(end)){
+        if (start.isEqual(end)) {
             path.add(start);
             return path;
         }
@@ -102,21 +100,21 @@ public class TileGraph {
 
         boolean found = false;
 
-        while (!queue.isEmpty() && !found){
+        while (!queue.isEmpty() && !found) {
             Tile current = queue.poll();
 
             LinkedList <WeightedEdge> neighbors =adjList.get(current);
-            if (neighbors != null){
+            if (neighbors != null) {
                 // process order: right then down
                 List<Tile> rightNeighbors = new ArrayList<>();
                 List<Tile> downNeighbors = new ArrayList<>();
 
                 for (WeightedEdge edge : neighbors) {
                     Tile neighbor = edge.getTile();
-                    if (neighbor.getX() > current.getX()){
+                    if (neighbor.getX() > current.getX()) {
                         rightNeighbors.add(neighbor);
                     }
-                    else if (neighbor.getY() > current.getY()){
+                    else if (neighbor.getY() > current.getY()) {
                         downNeighbors.add(neighbor);
                     }
                 }
@@ -128,12 +126,12 @@ public class TileGraph {
                 orderedNeighbors.addAll(rightNeighbors);
                 orderedNeighbors.addAll(downNeighbors);
 
-                for (Tile neighbor : orderedNeighbors){
+                for (Tile neighbor : orderedNeighbors) {
                     if (!visited.contains(neighbor)) {
                         visited.add(neighbor);
                         parent.put(neighbor, current);
 
-                        if (neighbor.isEqual(end)){
+                        if (neighbor.isEqual(end)) {
                             found = true;
                             break;
                         }
@@ -159,43 +157,247 @@ public class TileGraph {
     // dijkastra for path with lowest penalties
     private LinkedList<Tile> DijkstraShortestPath(Tile start, Tile end)
     {
-        LinkedList<Tile> shortestPath = new LinkedList<Tile>();
         // Just like UnweightedShortestPath(), you must return the shortest path from *end* to *start*
-        
+
+        LinkedList<Tile> shortestPath = new LinkedList<Tile>();
+
+        if (start ==  null || end == null) {
+            return shortestPath;
+        }
+
+        //distance map
+        Map<Tile, Integer> dist = new HashMap<>();
+        Map<Tile, Tile> prev = new HashMap<>();
+        Set<Tile> settled = new HashSet<>();
+
+        // priority Q of (dist, tile)
+        PriorityQueue<Map.Entry<Integer, Tile>> pq = new PriorityQueue<>((a,b) -> Integer.compare(a.getKey(), b.getKey()));
+
+        //initialise distances to inf and source to 0
+        for (Tile vertex : adjList.keySet()) {
+            dist.put(vertex, Integer.MAX_VALUE);
+        }
+        dist.put(start, 0);
+
+        pq.add(new AbstractMap.SimpleEntry<>(0, start));
+
+        while (!pq.isEmpty()) {
+            Map.Entry<Integer, Tile> entry = pq.poll(); //retrieves and removes head
+            Tile current = entry.getValue();
+            int currentDist = entry.getKey();
+
+            //if reach end, break
+            if (current.isEqual(end)) {
+                break;
+            }
+
+            //skip if already visited
+            if (settled.contains(current)) {
+                continue;
+            }
+            settled.add(current);
+
+            //check neighbors
+            LinkedList<WeightedEdge> neighbors = adjList.get(current);
+            if (neighbors != null) {
+                for (WeightedEdge edge : neighbors) {
+                    Tile neighbor = edge.getTile();
+                    int weight = edge.getPenalty();
+
+                    //only if weight is non-negative --> djikstras req
+                    if (weight < 0) {
+                        continue;
+                    }
+
+                    //not visited yet
+                    if (!settled.contains(neighbor)) {
+                        int newDist = currentDist + weight;
+                        //if better path, relax it
+                        if (newDist < dist.get(neighbor)) {
+                            dist.put(neighbor, newDist);
+                            prev.put(neighbor,current);
+                            pq.add(new AbstractMap.SimpleEntry<>(newDist, neighbor));
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        // reverse path order --> from end to start
+        if (prev.containsKey(end) || start.isEqual(end)) {
+            Tile current = end;
+            while (current != null) {
+                shortestPath.add(current);
+                current = prev.get(current);
+            }
+        }
+
         return shortestPath;
+
     }
 
     // Bellman-Ford Lowest Penalty Path - returns null if negative weight cycles are detected
     private LinkedList<Tile> BellmanShortestPath(Tile start, Tile end)
     {
-        LinkedList<Tile> shortestPath = new LinkedList<Tile>();
-
-        // remove these lines when implementing this algorithm
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        shortestPath.add(new Tile(0,0,'?',-10));
-        // remove these lines when implementing this algorithm
+        // // remove these lines when implementing this algorithm
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // shortestPath.add(new Tile(0,0,'?',-10));
+        // // remove these lines when implementing this algorithm
 
 
         // Just like UnweightedShortestPath(), you must return the shortest path from *end* to *start*
-
         // In addition, if a negative-weighted cycle is detected, you must return *null* for the shortestPath
         // You should also print out a warning message for visual confirmation
+
+        LinkedList<Tile> shortestPath = new LinkedList<Tile>();
+
+        if (start == null || end == null){
+            return shortestPath;
+        }
+
+        // get all vertices
+        Set<Tile> vertices = adjList.keySet();
+        int V = vertices.size();
+
+        // maps
+        Map<Tile, Integer> dist = new HashMap<>();
+        Map<Tile, Tile> prev = new HashMap<>();
+        
+        // initialise distances to inf and initial to 0
+        for (Tile vertex : vertices) {
+            dist.put(vertex, Integer.MAX_VALUE);
+        }
+        dist.put(start, 0);
+        prev.put(start, null);
+
+        // all edges into a list
+        List<WeightedEdgeList> allEdges = new ArrayList<>();
+        for (Map.Entry<Tile, LinkedList<WeightedEdge>> entry : adjList.entrySet()) {
+            Tile src = entry.getKey();
+            for (WeightedEdge edge : entry.getValue()) {
+                allEdges.add(new WeightedEdgeList(src, edge.getTile(), edge.getPenalty()));
+            }
+        }
+
+        // relax edges V-1 times
+        for (int  i =0 ; i < V-1 ; i++){
+            boolean updated = false;
+            for (WeightedEdgeList edge : allEdges){
+                Tile u = edge.src;
+                Tile v = edge.dst;
+                int weight = edge.weight;
+
+                if (dist.get(u) != Integer.MAX_VALUE && dist.get(u) + weight < dist.get(v)) {
+                    dist.put(v , dist.get(u) + weight);
+                    prev.put(v,u);
+                    updated = true;
+                }
+            }
+
+            if (!updated) {
+                break;
+            }
+        }
+
+        // check for -ve weight cycles
+        for (WeightedEdgeList edge : allEdges){
+            Tile u = edge.src;
+            Tile v = edge.dst;
+            int weight = edge.weight;
+
+            if (dist.get(u) != Integer.MAX_VALUE && dist.get(u) + weight < dist.get(v)) {
+                System.out.println("Negative weight cycle exists! D:");
+                return null;
+            }
+        }
         
         return shortestPath;
     }
 
+    // Helper class for bellmanford edges
+    private static class WeightedEdgeList {
+        Tile src;
+        Tile dst;
+        int weight;
+        
+        WeightedEdgeList(Tile s, Tile d, int w) {
+            src = s;
+            dst = d;
+            weight = w;
+        }
+    }
+
     private LinkedList<Tile> DAGShortestPath(Tile start, Tile end)
     {
-        LinkedList<Tile> shortestPath = new LinkedList<Tile>();
         // Just like UnweightedShortestPath(), you must return the shortest path from *end* to *start*
+
+        LinkedList<Tile> shortestPath = new LinkedList<Tile>();
+
+        if (start == null || end == null) {
+            return shortestPath;
+        }
+
+        // get topological order
+        LinkedList<Tile> topOrder = topologicalSort();
+        if (topOrder == null || topOrder.isEmpty()) {
+            return shortestPath;
+        }
+
+        //initialise map and set all to inf and src to 0
+        Map<Tile, Integer> dist = new HashMap<>();
+        Map<Tile, Tile> prev = new HashMap<>();
+
+        for (Tile vertex : adjList.keySet()) {
+            dist.put(vertex, Integer.MAX_VALUE);
+        }
+        dist.put(start, 0);
+        prev.put(start, null);
+
+        // vertices in top. order
+        boolean startReached = false;
+        for (Tile u : topOrder) {
+            if (u.isEqual(start)) {
+                startReached = true;
+            }
+
+            if (!startReached && !u.isEqual(start)) {
+                continue;
+            }
+
+            if (dist.get(u) != Integer.MAX_VALUE) {
+                LinkedList<WeightedEdge> neighbors = adjList.get(u);
+                if (neighbors != null) {
+                    for (WeightedEdge edge : neighbors) {
+                        Tile v = edge.getTile();
+                        int weight = edge.getPenalty();
+
+                        if (dist.get(u) + weight < dist.get(v)) {
+                            dist.put(v, dist.get(u) + weight);
+                            prev.put(v,u);
+                        }
+                    }
+                }
+            }
+        }
+
+        // path --> end to start
+        if (prev.containsKey(end) || start.isEqual(end)) {
+            Tile current = end;
+            while (current != null) {
+                shortestPath.add(current);
+                current = prev.get(current);
+            }
+        }
         
         return shortestPath;
     }
